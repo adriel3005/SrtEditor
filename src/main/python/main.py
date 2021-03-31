@@ -95,7 +95,11 @@ class Main(QMainWindow, Ui_MainWindow):
         minutes = int(minutes)
         millis = abs(millis) % 100
 
-        self.currentTime.setText("Current time  %d:%d:%d" % (minutes, seconds, millis))
+        sMillis = self.ThreeCharSyntax(str(millis))
+        sSeconds = self.TwoCharSyntax(str(seconds))
+        sMinutes = self.TwoCharSyntax(str(minutes))
+
+        self.currentTime.setText("Current time " + sMinutes + ":" + sSeconds + ":" + sMillis)
 
 
     def open(self):
