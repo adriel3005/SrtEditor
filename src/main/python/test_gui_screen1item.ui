@@ -77,16 +77,6 @@
       </widget>
      </widget>
     </item>
-    <item row="2" column="2" colspan="2">
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="0" colspan="5">
      <widget class="QProgressBar" name="progressBar">
       <property name="value">
@@ -206,6 +196,27 @@
          <number>0</number>
         </property>
        </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="2" column="2" rowspan="2" colspan="3">
+     <widget class="QFrame" name="QFrameVideo">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>9</y>
+         <width>731</width>
+         <height>591</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="QVideoBoxVLayout"/>
       </widget>
      </widget>
     </item>
