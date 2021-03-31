@@ -87,7 +87,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.statusBar.showMessage("Ready")
 
-    def ConvertMSecs(self, millis):
+    def SetCurrentTimeText(self, millis):
         millis = int(millis)
         seconds = (millis / 1000) % 60
         seconds = int(seconds)
@@ -132,13 +132,15 @@ class Main(QMainWindow, Ui_MainWindow):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
             self.playButton.setIcon(
                 self.style().standardIcon(QStyle.SP_MediaPause))
+            # Show exact time when paused
+            self.SetCurrentTimeText(self.mediaPlayer.position())
         else:
             self.playButton.setIcon(
                 self.style().standardIcon(QStyle.SP_MediaPlay))
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
-        self.ConvertMSecs(self.mediaPlayer.position())
+        self.SetCurrentTimeText(self.mediaPlayer.position())
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
