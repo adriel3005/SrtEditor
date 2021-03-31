@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 import sip
 import sys
+import threading
 
 
 
@@ -31,7 +32,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.addButton.clicked.connect(self.OnAdd)
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
-        self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        #self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         #Video
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
@@ -81,7 +82,30 @@ class Main(QMainWindow, Ui_MainWindow):
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
         self.mediaPlayer.error.connect(self.handleError)
+
         self.statusBar.showMessage("Ready")
+
+        b = threading.Thread(name='background', target=self.background)
+        b.start()
+
+    def background(self):
+        count = 0
+        while True:
+            positions = self.mediaPlayer.position()
+            self.ConvertMSecs(positions)
+
+
+
+    def ConvertMSecs(self, millis):
+        millis = int(millis)
+        seconds = (millis / 1000) % 60
+        seconds = int(seconds)
+        minutes = (millis / (1000 * 60)) % 60
+        minutes = int(minutes)
+        millis = abs(millis) % 100
+
+        self.currentTime.setText("%d:%d:%d" % (minutes, seconds, millis))
+
 
     def open(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Selecciona los mediose",".", "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
@@ -119,6 +143,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
+
+
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
@@ -295,5 +321,7 @@ if __name__ == '__main__':
     #window.resize(250, 150)
     #window.show()
     window.showMaximized()
+
+
     exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
     sys.exit(exit_code)
