@@ -82,19 +82,10 @@ class Main(QMainWindow, Ui_MainWindow):
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
         self.mediaPlayer.error.connect(self.handleError)
+        # Every 200 ms
+        self.mediaPlayer.setNotifyInterval(200)
 
         self.statusBar.showMessage("Ready")
-
-        b = threading.Thread(name='background', target=self.background)
-        b.start()
-
-    def background(self):
-        count = 0
-        while True:
-            positions = self.mediaPlayer.position()
-            self.ConvertMSecs(positions)
-
-
 
     def ConvertMSecs(self, millis):
         millis = int(millis)
@@ -104,7 +95,7 @@ class Main(QMainWindow, Ui_MainWindow):
         minutes = int(minutes)
         millis = abs(millis) % 100
 
-        self.currentTime.setText("%d:%d:%d" % (minutes, seconds, millis))
+        self.currentTime.setText("Current time  %d:%d:%d" % (minutes, seconds, millis))
 
 
     def open(self):
@@ -143,8 +134,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
-
-
+        self.ConvertMSecs(self.mediaPlayer.position())
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
