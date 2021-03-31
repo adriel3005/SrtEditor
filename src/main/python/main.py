@@ -46,7 +46,7 @@ class Main(QMainWindow, Ui_MainWindow):
         openButton.setIconSize(btnSize)
         openButton.setFont(QFont("Noto Sans", 8))
         openButton.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
-        openButton.clicked.connect(self.abrir)
+        openButton.clicked.connect(self.open)
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -83,7 +83,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.mediaPlayer.error.connect(self.handleError)
         self.statusBar.showMessage("Ready")
 
-    def abrir(self):
+    def open(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Selecciona los mediose",".", "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
 
         if fileName != '':
@@ -92,6 +92,16 @@ class Main(QMainWindow, Ui_MainWindow):
             self.playButton.setEnabled(True)
             self.statusBar.showMessage(fileName)
             self.play()
+            self.videoPath = fileName
+            self.videoName = self.videoPath.split("/")[-1]
+
+    def OpenVideoFile(self):
+        #self.videoPath, _ = QFileDialog.getOpenFileName(self, 'Open File', options=QFileDialog.DontUseNativeDialog)
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.videoPath, _ = QFileDialog.getOpenFileName(self,"Select Video File", "","Video File (*.mp4 *.avi *.ogv)", options=options)
+        self.videoName = self.videoPath.split("/")[-1]
 
     def play(self):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
@@ -269,13 +279,7 @@ class Main(QMainWindow, Ui_MainWindow):
             return str
 
 
-    def OpenVideoFile(self):
-        #self.videoPath, _ = QFileDialog.getOpenFileName(self, 'Open File', options=QFileDialog.DontUseNativeDialog)
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        self.videoPath, _ = QFileDialog.getOpenFileName(self,"Select Video File", "","Video File (*.mp4 *.avi *.ogv)", options=options)
-        self.videoName = self.videoPath.split("/")[-1]
 
     def ShowPopUpMessage(self):
         errorMsg = QMessageBox()
