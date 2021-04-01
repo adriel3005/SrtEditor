@@ -10,10 +10,11 @@ from test_gui_screen1item import Ui_MainWindow
 #from test_gui_screen1itempromotedlyrics import Ui_MainWindow
 # import from below allows the OnAdd function to work
 from PyQt5 import QtCore, QtGui, QtWidgets
+from google_trans_new import google_translator
+
 
 import sip
 import sys
-import threading
 
 
 
@@ -84,7 +85,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.mediaPlayer.error.connect(self.handleError)
         # Every 200 ms
         self.mediaPlayer.setNotifyInterval(200)
-
+        self.translator = google_translator()
         self.statusBar.showMessage("Ready")
 
     def SetCurrentTimeText(self, millis):
@@ -260,8 +261,6 @@ class Main(QMainWindow, Ui_MainWindow):
                 print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
                     childStartTime.msec()))
 
-                # about to make a mess parsing
-
                 # Number of iteration
                 srtFile.write(str(progressCount) + "\n")
 
@@ -276,13 +275,28 @@ class Main(QMainWindow, Ui_MainWindow):
                 secondTime = self.TwoCharSyntax(str(childEndTime.second()))
                 mSecTime = self.ThreeCharSyntax(str(childEndTime.msec()))
                 srtFile.write("00:"+minuteTime + ":" + secondTime + "," + mSecTime)
+
                 # Lyrics
-                srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
+
+                if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
+                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
+                    srtFile.write("\n" + result + "\n")
+                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
+                    srtFile.write(result + "\n\n")
+                elif self.translateEnglish.isChecked():
+                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
+                    srtFile.write("\n" + result + "\n\n")
+                elif self.translateSpanish.isChecked():
+                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
+                    srtFile.write("\n" + result + "\n\n")
+                else:
+                    srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
+
+                #srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
                 progressCount += 1
 
         else:
             self.ShowPopUpMessage()
-            print("Error")
 
     # check if string is only 1 character
     def TwoCharSyntax(self, str):
