@@ -458,11 +458,23 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionInportar_Subtitulos_srt"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_Video">
    <property name="text">
     <string>Open Video</string>
+   </property>
+  </action>
+  <action name="actionInportar_Subtitulos_srt">
+   <property name="text">
+    <string>Inportar Subtitulos srt</string>
    </property>
   </action>
  </widget>
