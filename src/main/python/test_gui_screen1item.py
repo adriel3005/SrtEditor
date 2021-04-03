@@ -182,8 +182,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "SRT Editor"))
         self.translateEnglish.setText(_translate("MainWindow", "English"))
         self.translateSpanish.setText(_translate("MainWindow", "Español"))
-        self.lyricsTitle.setText(_translate("MainWindow", "Lyrics"))
-        self.createSRTButton.setText(_translate("MainWindow", "Create SRT"))
+        self.lyricsTitle.setText(_translate("MainWindow", "Letra"))
+        self.createSRTButton.setText(_translate("MainWindow", "Crear SRT"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
 import plusandminus_rc
 
