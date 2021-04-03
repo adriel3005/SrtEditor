@@ -94,7 +94,6 @@ class Main(QMainWindow, Ui_MainWindow):
         seconds = int(seconds)
         minutes = (millis / (1000 * 60)) % 60
         minutes = int(minutes)
-        millis = abs(millis) % 100
 
         sMillis = self.ThreeCharSyntax(str(millis))
         sSeconds = self.TwoCharSyntax(str(seconds))
@@ -313,6 +312,8 @@ class Main(QMainWindow, Ui_MainWindow):
             return "00" + str
         elif len(str) == 2:
             return "0" + str
+        elif len(str) >= 4:
+            return str[-3:]
         else:
             return str
 
