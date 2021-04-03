@@ -16,6 +16,9 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1560, 1032)
         MainWindow.setBaseSize(QtCore.QSize(0, 0))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        MainWindow.setFont(font)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -112,7 +115,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 398, 789))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 398, 756))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -168,7 +171,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.currentLyrics, 4, 2, 1, 3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1560, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1560, 29))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -186,7 +189,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "SRT Editor"))
         self.translateEnglish.setText(_translate("MainWindow", "English"))
         self.translateSpanish.setText(_translate("MainWindow", "Español"))
         self.mediaPlayerTitle.setText(_translate("MainWindow", "Media Player"))

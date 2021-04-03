@@ -16,8 +16,13 @@
     <height>0</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>13</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SRT Editor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -209,7 +214,7 @@
          <x>0</x>
          <y>0</y>
          <width>398</width>
-         <height>789</height>
+         <height>756</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -319,7 +324,7 @@
      <x>0</x>
      <y>0</y>
      <width>1560</width>
-     <height>21</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
