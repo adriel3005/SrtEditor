@@ -173,16 +173,12 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1560, 29))
         self.menubar.setObjectName("menubar")
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.actionOpen_Video = QtWidgets.QAction(MainWindow)
         self.actionOpen_Video.setObjectName("actionOpen_Video")
-        self.menuFile.addAction(self.actionOpen_Video)
-        self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -195,7 +191,6 @@ class Ui_MainWindow(object):
         self.mediaPlayerTitle.setText(_translate("MainWindow", "Media Player"))
         self.lyricsTitle.setText(_translate("MainWindow", "Lyrics"))
         self.createSRTButton.setText(_translate("MainWindow", "Create SRT"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
 import plusandminus_rc
 
