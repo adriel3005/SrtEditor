@@ -263,6 +263,11 @@
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QPushButton" name="fiveForward">
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>5 segundos -&gt;</string>
         </property>
@@ -270,6 +275,11 @@
       </item>
       <item>
        <widget class="QPushButton" name="tenForward">
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>10 segundos -&gt;</string>
         </property>
@@ -306,6 +316,11 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="tenBack">
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>&lt;- 10 segundos</string>
         </property>
@@ -313,6 +328,11 @@
       </item>
       <item>
        <widget class="QPushButton" name="fiveBack">
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>&lt;- 5 segundos</string>
         </property>
