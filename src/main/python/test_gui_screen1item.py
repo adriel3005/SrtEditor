@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.currentTime = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(15)
         self.currentTime.setFont(font)
         self.currentTime.setText("")
         self.currentTime.setAlignment(QtCore.Qt.AlignCenter)

@@ -93,6 +93,26 @@ class Main(QMainWindow, Ui_MainWindow):
         self.fiveForward.clicked.connect(lambda: self.TimeSkip(5, True))
         self.tenForward.clicked.connect(lambda: self.TimeSkip(10, True))
 
+        #Import srt
+        self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
+
+    # Currently only supports mp4
+    def ImportSRT(self):
+        fileName, _ = QFileDialog.getOpenFileName(self, "Selecciona los mediose", ".",
+                                                  "SRT Files (*.srt)")
+        videoFilePath = (fileName.split(".")[0]) + ".mp4"
+        print(videoFilePath)
+        if fileName != '':
+            self.mediaPlayer.setMedia(
+                QMediaContent(QUrl.fromLocalFile(videoFilePath)))
+            self.playButton.setEnabled(True)
+            self.statusBar.showMessage(fileName)
+            self.play()
+            self.videoPath = videoFilePath
+            self.videoName = self.videoPath.split("/")[-1]
+
+
+
     def TimeSkip(self, amount, forward):
         if forward:
             tempPosition = self.mediaPlayer.position()
