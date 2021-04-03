@@ -15,6 +15,7 @@ from google_trans_new import google_translator
 
 import sip
 import sys
+import numpy as np
 
 class Main(QMainWindow, Ui_MainWindow):
 
@@ -85,6 +86,21 @@ class Main(QMainWindow, Ui_MainWindow):
         self.mediaPlayer.setNotifyInterval(200)
         self.translator = google_translator()
         self.statusBar.showMessage("Listo")
+
+        # connect buttons playback
+        self.fiveBack.clicked.connect(lambda: self.TimeSkip(5, False))
+        self.tenBack.clicked.connect(lambda: self.TimeSkip(10, False))
+        self.fiveForward.clicked.connect(lambda: self.TimeSkip(5, True))
+        self.tenForward.clicked.connect(lambda: self.TimeSkip(10, True))
+
+    def TimeSkip(self, amount, forward):
+        if forward:
+            tempPosition = self.mediaPlayer.position()
+            self.setPosition(tempPosition + (amount * 1000))
+        else:
+            tempPosition = self.mediaPlayer.position()
+            self.setPosition(tempPosition - (amount * 1000))
+
 
     def SetCurrentTimeText(self, millis):
         millis = int(millis)
