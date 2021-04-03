@@ -1,7 +1,7 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QStyle, QSlider, QStatusBar
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import QDir, Qt, QUrl, QSize
+from PyQt5.QtCore import QDir, Qt, QUrl, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import  QVideoWidget
@@ -15,8 +15,6 @@ from google_trans_new import google_translator
 
 import sip
 import sys
-
-
 
 class Main(QMainWindow, Ui_MainWindow):
 
@@ -161,6 +159,7 @@ class Main(QMainWindow, Ui_MainWindow):
             sip.delete(self.lyricList[-1])
             self.lyricCount -= 1
             del (self.lyricList[-1])
+            self.progressBar.setProperty("value", 0)
 
     def OnAdd(self):
         self.lyricGroup = QtWidgets.QWidget(self.scrollAreaWidgetContents)
@@ -239,6 +238,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # add to list
         self.lyricList.append(self.lyricGroup)
         self.lyricCount += 1
+        self.progressBar.setProperty("value", 0)
 
     def IncreaseTime(self, endTime):
         if endTime.time().currentTime() <= self.startTime.time().currentTime():
@@ -249,7 +249,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def CreateSRT(self):
         # For progress bar
-        progressCount = 1
+        self.progressCount = 1
 
         # Check to see if file has been open
         if self.videoPath:
@@ -268,11 +268,11 @@ class Main(QMainWindow, Ui_MainWindow):
                 # end Time
                 childEndTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "endTime").time()
 
-                print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
-                    childStartTime.msec()))
+                #print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
+                #    childStartTime.msec()))
 
                 # Number of iteration
-                srtFile.write(str(progressCount) + "\n")
+                srtFile.write(str(self.progressCount) + "\n")
 
                 # start time
                 minuteTime = self.TwoCharSyntax(str(childStartTime.minute()))
@@ -301,9 +301,10 @@ class Main(QMainWindow, Ui_MainWindow):
                     srtFile.write("\n" + result + "\n\n")
                 else:
                     srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
-
-                #srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
-                progressCount += 1
+                progress = self.progressCount / self.lyricCount
+                print(int(progress*100))
+                self.progressBar.setProperty("value", int(progress*100))
+                self.progressCount += 1
 
         else:
             self.ShowPopUpMessage()
