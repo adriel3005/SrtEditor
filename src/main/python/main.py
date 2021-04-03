@@ -259,7 +259,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def IncreaseTime(self, endTime):
         if endTime.time().currentTime() <= self.startTime.time().currentTime():
             startTimeObject =  self.startTime.time()
-            newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec() + 1)
+            newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec())
             endTime.setTime(newTime)
 
 
@@ -271,7 +271,7 @@ class Main(QMainWindow, Ui_MainWindow):
         if self.videoPath:
             self.newVideoPath = self.videoPath.split(".")[0]
             print(self.newVideoPath + ".srt")
-            srtFile = open(self.newVideoPath + ".srt", "w")
+            srtFile = open(self.newVideoPath + ".srt", "w", encoding="utf-8")
 
             for i in range(len(self.lyricList)):
                 # lyrics
