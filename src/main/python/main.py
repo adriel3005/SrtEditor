@@ -135,6 +135,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 self.style().standardIcon(QStyle.SP_MediaPause))
             # Show exact time when paused
             self.SetCurrentTimeText(self.mediaPlayer.position())
+            self.SetCurrentLyrics(self.mediaPlayer.position())
         else:
             self.playButton.setIcon(
                 self.style().standardIcon(QStyle.SP_MediaPlay))
@@ -142,6 +143,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
         self.SetCurrentTimeText(self.mediaPlayer.position())
+        self.SetCurrentLyrics(position)
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
@@ -314,7 +316,30 @@ class Main(QMainWindow, Ui_MainWindow):
         else:
             return str
 
+    def SetCurrentLyrics(self, currentTime):
+        for i in range(len(self.lyricList)):
+            # start Time
+            ## Format: hh:mm:ss:zzz
+            childStartTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "startTime").time()
 
+            # convert to msecs
+            minuteTime = childStartTime.minute()
+            secondTime = childStartTime.second()
+            mSecTime = childStartTime.msec()
+            startTotal = (minuteTime * 60000) + (secondTime * 1000) + mSecTime
+
+            # end Time
+            childEndTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "endTime").time()
+
+            # convert to msecs
+            minuteTime = childEndTime.minute()
+            secondTime = childEndTime.second()
+            mSecTime = childEndTime.msec()
+            endTotal = (minuteTime * 60000) + (secondTime * 1000) + mSecTime
+
+            if currentTime >= startTotal and currentTime <= endTotal:
+                childLyricsText = self.lyricList[i].findChild(QtWidgets.QPlainTextEdit, "lyricsText")
+                self.currentLyrics.setText(childLyricsText.toPlainText())
 
 
     def ShowPopUpMessage(self):
