@@ -211,6 +211,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.endTime.setObjectName("endTime")
         self.endTime.setDisplayFormat("mm:ss:zzz")
         self.gridLayout.addWidget(self.endTime, 1, 1, 1, 1)
+        self.endTime.setCurrentSectionIndex(0)
+
 
         self.startTime = QtWidgets.QTimeEdit(self.lyricGroup)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
@@ -224,10 +226,12 @@ class Main(QMainWindow, Ui_MainWindow):
         font.setPointSize(11)
         self.startTime.setFont(font)
         self.startTime.setCurrentSection(QtWidgets.QDateTimeEdit.MSecSection)
+        self.startTime.setCurrentSection(2)
         self.startTime.setCurrentSectionIndex(2)
         self.startTime.setTime(QtCore.QTime(0, 0, 0))
         self.startTime.setObjectName("startTime")
         self.startTime.setDisplayFormat("mm:ss:zzz")
+        self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
 
         self.gridLayout.addWidget(self.startTime, 0, 1, 1, 1)
         self.verticalLayout.addWidget(self.lyricGroup, 0, QtCore.Qt.AlignTop)
@@ -236,9 +240,14 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lyricList.append(self.lyricGroup)
         self.lyricCount += 1
 
-    def CreateSRT(self):
-        #print(len(self.lyricList))
+    def IncreaseTime(self, endTime):
+        if endTime.time().currentTime() <= self.startTime.time().currentTime():
+            startTimeObject =  self.startTime.time()
+            newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec() + 1)
+            endTime.setTime(newTime)
 
+
+    def CreateSRT(self):
         # For progress bar
         progressCount = 1
 
