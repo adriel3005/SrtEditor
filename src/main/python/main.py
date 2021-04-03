@@ -267,6 +267,8 @@ class Main(QMainWindow, Ui_MainWindow):
         # For progress bar
         self.progressCount = 1
 
+        itemSelected = self.textAppendList.currentText()
+
         # Check to see if file has been open
         if self.videoPath:
             self.newVideoPath = self.videoPath.split(".")[0]
@@ -308,13 +310,13 @@ class Main(QMainWindow, Ui_MainWindow):
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
                     srtFile.write("\n" + result + "\n")
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write(result + "\n\n")
+                    srtFile.write(itemSelected + result.rstrip() + itemSelected + "\n\n")
                 elif self.translateEnglish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
                     srtFile.write("\n" + result + "\n\n")
                 elif self.translateSpanish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write("\n" + result + "\n\n")
+                    srtFile.write("\n" + itemSelected + result.rstrip() + itemSelected + "\n\n")
                 else:
                     srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
                 progress = self.progressCount / self.lyricCount
