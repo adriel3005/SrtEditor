@@ -219,12 +219,18 @@ class Ui_MainWindow(object):
         self.menubar.setEnabled(True)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1560, 21))
         self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.actionOpen_Video = QtWidgets.QAction(MainWindow)
         self.actionOpen_Video.setObjectName("actionOpen_Video")
+        self.actionInportar_Subtitulos_srt = QtWidgets.QAction(MainWindow)
+        self.actionInportar_Subtitulos_srt.setObjectName("actionInportar_Subtitulos_srt")
+        self.menuFile.addAction(self.actionInportar_Subtitulos_srt)
+        self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -253,7 +259,9 @@ class Ui_MainWindow(object):
         self.textAppendList.setItemText(12, _translate("MainWindow", "🎙"))
         self.textAppendList.setItemText(13, _translate("MainWindow", "🎵"))
         self.createSRTButton.setText(_translate("MainWindow", "Crear SRT"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
+        self.actionInportar_Subtitulos_srt.setText(_translate("MainWindow", "Inportar Subtitulos srt"))
 import plusandminus_rc
 
 
