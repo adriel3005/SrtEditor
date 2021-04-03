@@ -39,9 +39,9 @@ class Main(QMainWindow, Ui_MainWindow):
         btnSize = QSize(16, 16)
         videoWidget = QVideoWidget()
 
-        openButton = QPushButton("Open Video")
-        openButton.setToolTip("Open Video File")
-        openButton.setStatusTip("Open Video File")
+        openButton = QPushButton("Abrir Video")
+        openButton.setToolTip("Abrir Video")
+        openButton.setStatusTip("Abrir Video")
         openButton.setFixedHeight(24)
         openButton.setIconSize(btnSize)
         openButton.setFont(QFont("Noto Sans", 8))
@@ -84,7 +84,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # Every 200 ms
         self.mediaPlayer.setNotifyInterval(200)
         self.translator = google_translator()
-        self.statusBar.showMessage("Ready")
+        self.statusBar.showMessage("Listo")
 
     def SetCurrentTimeText(self, millis):
         millis = int(millis)
@@ -97,7 +97,7 @@ class Main(QMainWindow, Ui_MainWindow):
         sSeconds = self.TwoCharSyntax(str(seconds))
         sMinutes = self.TwoCharSyntax(str(minutes))
 
-        self.currentTime.setText("Current time " + sMinutes + ":" + sSeconds + ":" + sMillis)
+        self.currentTime.setText("Tiempo Actual " + sMinutes + ":" + sSeconds + ":" + sMillis)
 
 
     def open(self):
@@ -180,7 +180,7 @@ class Main(QMainWindow, Ui_MainWindow):
         font.setPointSize(10)
         self.startLabel.setFont(font)
         self.startLabel.setObjectName("startLabel")
-        self.startLabel.setText("Start:")
+        self.startLabel.setText("Inicio:")
         self.gridLayout.addWidget(self.startLabel, 0, 0, 1, 1)
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -193,7 +193,7 @@ class Main(QMainWindow, Ui_MainWindow):
         font.setPointSize(10)
         self.endLabel.setFont(font)
         self.endLabel.setObjectName("endLabel")
-        self.endLabel.setText("End:")
+        self.endLabel.setText("Final:")
         self.gridLayout.addWidget(self.endLabel, 1, 0, 1, 1)
 
         self.endTime = QtWidgets.QTimeEdit(self.lyricGroup)

@@ -252,7 +252,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Lyrics</string>
+       <string>Letra</string>
       </property>
      </widget>
     </item>
@@ -274,7 +274,7 @@
        <string notr="true">background-color: rgb(169, 180, 200);</string>
       </property>
       <property name="text">
-       <string>Create SRT</string>
+       <string>Crear SRT</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
