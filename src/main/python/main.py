@@ -328,6 +328,8 @@ class Main(QMainWindow, Ui_MainWindow):
             return str
 
     def SetCurrentLyrics(self, currentTime):
+
+        showingLyrics = False
         for i in range(len(self.lyricList)):
             # start Time
             ## Format: hh:mm:ss:zzz
@@ -351,7 +353,10 @@ class Main(QMainWindow, Ui_MainWindow):
             if currentTime >= startTotal and currentTime <= endTotal:
                 childLyricsText = self.lyricList[i].findChild(QtWidgets.QPlainTextEdit, "lyricsText")
                 self.currentLyrics.setText(childLyricsText.toPlainText())
-
+                print("we in object ", i)
+                showingLyrics = True
+        if showingLyrics == False:
+            self.currentLyrics.setText("")
 
     def ShowPopUpMessage(self):
         errorMsg = QMessageBox()
