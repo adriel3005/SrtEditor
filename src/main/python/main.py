@@ -25,6 +25,8 @@ class Main(QMainWindow, Ui_MainWindow):
     videoPath = ""
     videoName = ""
     darkMode = False
+    redMode = False
+    blueMode = False
 
     def __init__(self):
         super(Main, self).__init__()
@@ -35,8 +37,11 @@ class Main(QMainWindow, Ui_MainWindow):
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
 
-        #Dark Mode
-        self.actionDark_Mode.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
+        #Modes
+        self.actionDark_Mode_2.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
+        self.actionLight_Mode.triggered.connect(self.ToggleLightMode)
+        self.actionRed_Palette.triggered.connect(lambda: self.ToggleRedMode(self.redMode))
+        self.actionBlue_Palette.triggered.connect(lambda: self.ToggleBlueMode(self.blueMode))
 
         #Video
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
@@ -99,13 +104,72 @@ class Main(QMainWindow, Ui_MainWindow):
 
         #Import srt
         self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
+    def ToggleLightMode(self):
+        light_palette = QPalette()
+        appctxt.app.setPalette(light_palette)
+
+    def ToggleRedMode(self, dark):
+
+        if not dark:
+            red_palette = QPalette()
+
+            red_palette.setColor(QPalette.Window, QColor(100,53,53))
+            red_palette.setColor(QPalette.WindowText, Qt.white)
+            red_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+            red_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+            red_palette.setColor(QPalette.ToolTipBase, Qt.white)
+            red_palette.setColor(QPalette.ToolTipText, Qt.white)
+            red_palette.setColor(QPalette.Text, Qt.white)
+            red_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+            red_palette.setColor(QPalette.ButtonText, Qt.white)
+            red_palette.setColor(QPalette.BrightText, Qt.red)
+            red_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+            red_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+            red_palette.setColor(QPalette.HighlightedText, Qt.black)
+
+            appctxt.app.setPalette(red_palette)
+            #appctxt.app.setStyleSheet(
+            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+            self.redMode = True
+        else:
+            light_palette = QPalette()
+            appctxt.app.setPalette(light_palette)
+            self.redMode = False
+
+    def ToggleBlueMode(self, dark):
+
+        if not dark:
+            blue_palette = QPalette()
+
+            blue_palette.setColor(QPalette.Window, QColor(53,53,100))
+            blue_palette.setColor(QPalette.WindowText, Qt.white)
+            blue_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+            blue_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+            blue_palette.setColor(QPalette.ToolTipBase, Qt.white)
+            blue_palette.setColor(QPalette.ToolTipText, Qt.white)
+            blue_palette.setColor(QPalette.Text, Qt.white)
+            blue_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+            blue_palette.setColor(QPalette.ButtonText, Qt.white)
+            blue_palette.setColor(QPalette.BrightText, Qt.red)
+            blue_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+            blue_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+            blue_palette.setColor(QPalette.HighlightedText, Qt.black)
+
+            appctxt.app.setPalette(blue_palette)
+            #appctxt.app.setStyleSheet(
+            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+            self.blueMode = True
+        else:
+            light_palette = QPalette()
+            appctxt.app.setPalette(light_palette)
+            self.blueMode = False
 
     def ToggleDarkMode(self, dark):
 
         if not dark:
             dark_palette = QPalette()
 
-            dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+            dark_palette.setColor(QPalette.Window, QColor(53,53,53))
             dark_palette.setColor(QPalette.WindowText, Qt.white)
             dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
             dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))

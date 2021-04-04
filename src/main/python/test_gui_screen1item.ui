@@ -460,9 +460,18 @@
      <string>File</string>
     </property>
     <addaction name="actionInportar_Subtitulos_srt"/>
-    <addaction name="actionDark_Mode"/>
+   </widget>
+   <widget class="QMenu" name="menuEstilos">
+    <property name="title">
+     <string>Estilos</string>
+    </property>
+    <addaction name="actionLight_Mode"/>
+    <addaction name="actionDark_Mode_2"/>
+    <addaction name="actionRed_Palette"/>
+    <addaction name="actionBlue_Palette"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEstilos"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_Video">
@@ -478,6 +487,26 @@
   <action name="actionDark_Mode">
    <property name="text">
     <string>Dark Mode</string>
+   </property>
+  </action>
+  <action name="actionLight_Mode">
+   <property name="text">
+    <string>Light Mode</string>
+   </property>
+  </action>
+  <action name="actionDark_Mode_2">
+   <property name="text">
+    <string>Dark Mode</string>
+   </property>
+  </action>
+  <action name="actionRed_Palette">
+   <property name="text">
+    <string>Red Palette</string>
+   </property>
+  </action>
+  <action name="actionBlue_Palette">
+   <property name="text">
+    <string>Blue Palette</string>
    </property>
   </action>
  </widget>
