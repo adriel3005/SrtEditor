@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1560</width>
-    <height>1031</height>
+    <width>1647</width>
+    <height>1154</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -207,7 +207,7 @@
          <x>0</x>
          <y>0</y>
          <width>398</width>
-         <height>703</height>
+         <height>826</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -234,6 +234,18 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="currentTime">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>175</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -262,10 +274,22 @@
     <item row="1" column="4">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
+       <widget class="QPushButton" name="oneMForward">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>100 msegundos -&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="fiveForward">
         <property name="font">
          <font>
-          <pointsize>15</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -277,7 +301,7 @@
        <widget class="QPushButton" name="tenForward">
         <property name="font">
          <font>
-          <pointsize>15</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -316,9 +340,15 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="tenBack">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>15</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -330,11 +360,23 @@
        <widget class="QPushButton" name="fiveBack">
         <property name="font">
          <font>
-          <pointsize>15</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
          <string>&lt;- 5 segundos</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="oneMBack">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;-100msegundos</string>
         </property>
        </widget>
       </item>
@@ -451,7 +493,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1560</width>
+     <width>1647</width>
      <height>21</height>
     </rect>
    </property>

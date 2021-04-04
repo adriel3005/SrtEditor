@@ -52,7 +52,7 @@ class Main(QMainWindow, Ui_MainWindow):
         openButton = QPushButton("Abrir Video")
         openButton.setToolTip("Abrir Video")
         openButton.setStatusTip("Abrir Video")
-        openButton.setFixedHeight(50)
+        openButton.setFixedHeight(40)
         openButton.setIconSize(btnSize)
         openButton.setFont(QFont("Noto Sans", 16))
         openButton.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
@@ -61,6 +61,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
         self.playButton.setFixedHeight(50)
+        self.playButton.setFixedWidth(50)
         self.playButton.setIconSize(btnSize)
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.playButton.clicked.connect(self.play)
@@ -99,8 +100,10 @@ class Main(QMainWindow, Ui_MainWindow):
         # connect buttons playback
         self.fiveBack.clicked.connect(lambda: self.TimeSkip(5, False))
         self.tenBack.clicked.connect(lambda: self.TimeSkip(10, False))
+        self.oneMBack.clicked.connect(lambda: self.TimeSkip(.1, False))
         self.fiveForward.clicked.connect(lambda: self.TimeSkip(5, True))
         self.tenForward.clicked.connect(lambda: self.TimeSkip(10, True))
+        self.oneMForward.clicked.connect(lambda: self.TimeSkip(.1, True))
 
         #Import srt
         self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
@@ -285,10 +288,10 @@ class Main(QMainWindow, Ui_MainWindow):
     def TimeSkip(self, amount, forward):
         if forward:
             tempPosition = self.mediaPlayer.position()
-            self.setPosition(tempPosition + (amount * 1000))
+            self.setPosition(tempPosition + int(amount * 1000))
         else:
             tempPosition = self.mediaPlayer.position()
-            self.setPosition(tempPosition - (amount * 1000))
+            self.setPosition(tempPosition - int(amount * 1000))
 
 
     def SetCurrentTimeText(self, millis):
@@ -462,8 +465,19 @@ class Main(QMainWindow, Ui_MainWindow):
 
         # Check to see if file has been open
         if self.videoPath:
-            self.newVideoPath = self.videoPath.split(".")[0] + ".srt"
+
+            self.newVideoPath = self.videoPath.split(".")[0]+ " - NoTranslation" + ".srt"
             srtFile = open(self.newVideoPath, "w", encoding="utf-8")
+
+            if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
+                self.newVideoPath = self.videoPath.split(".")[0] + ".srt"
+                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
+            elif self.translateEnglish.isChecked():
+                self.newVideoPath = self.videoPath.split(".")[0] + " - English" + ".srt"
+                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
+            elif self.translateSpanish.isChecked():
+                self.newVideoPath = self.videoPath.split(".")[0] + " - Spanish" + ".srt"
+                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
 
             for i in range(len(self.lyricList)):
                 # lyrics
