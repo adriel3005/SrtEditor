@@ -377,8 +377,14 @@ class Main(QMainWindow, Ui_MainWindow):
             endTimeObject = self.lyricList[self.lyricCount-1].findChild(QtWidgets.QTimeEdit, "endTime").time()
             newTime = QtCore.QTime(0, endTimeObject.minute(), endTimeObject.second(), endTimeObject.msec() + 1)
             self.OnAdd(start=newTime, end= newTime)
+            self.scrollArea.ensureWidgetVisible(self.lyricGroup)
+            max = self.scrollArea.verticalScrollBar().maximum()
+            self.scrollArea.verticalScrollBar().setValue(999999)
+
         else:
             self.OnAdd()
+            max = self.scrollArea.verticalScrollBar().maximum()
+            self.scrollArea.verticalScrollBar().setValue(max)
 
 
     def OnAdd(self, start = QtCore.QTime(0, 0, 0), end = QtCore.QTime(0, 0, 0), lyrics = ""):
@@ -525,17 +531,17 @@ class Main(QMainWindow, Ui_MainWindow):
 
                 if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result.rstrip() + "\n")
+                    srtFile.write("\n" + result.rstrip().replace("\n", " ") + "\n")
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write(itemSelected + result.rstrip() + itemSelected + "\n\n")
+                    srtFile.write(itemSelected + result.rstrip().replace("\n", " ") + itemSelected + "\n\n")
                 elif self.translateEnglish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result.rstrip() + "\n\n")
+                    srtFile.write("\n" + result.rstrip().replace("\n", " ") + "\n\n")
                 elif self.translateSpanish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write("\n" + itemSelected + result.rstrip() + itemSelected + "\n\n")
+                    srtFile.write("\n" + itemSelected + result.rstrip().replace("\n", " ") + itemSelected + "\n\n")
                 else:
-                    srtFile.write("\n" + childLyricsText.toPlainText() + "\n\n")
+                    srtFile.write("\n" + childLyricsText.toPlainText().replace("\n", " ") + "\n\n")
                 progress = self.progressCount / self.lyricCount
                 print(int(progress*100))
                 self.progressBar.setProperty("value", int(progress*100))
@@ -603,6 +609,12 @@ class Main(QMainWindow, Ui_MainWindow):
         errorMsg.setText("Por favor selecciona un video primero")
         x = errorMsg.exec_()
 
+class WheelEventFilter(QtCore.QObject):
+    def eventFilter(self, obj, ev):
+        if obj.inherits("QTimeEdit") and ev.type() == QtCore.QEvent.Wheel:
+            return True
+        return False
+
 
 if __name__ == '__main__':
     appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
@@ -610,6 +622,10 @@ if __name__ == '__main__':
     window = Main()
 
     appctxt.app.setStyle("Fusion")
+
+    app = QtWidgets.QApplication.instance()
+    filter = WheelEventFilter()
+    app.installEventFilter(filter)
 
     # dark_palette = QPalette()
     #
