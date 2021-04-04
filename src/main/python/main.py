@@ -452,7 +452,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startTime.setTime(start)
         self.startTime.setObjectName("startTime")
         self.startTime.setDisplayFormat("mm:ss:zzz")
-        self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
+        #self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
 
         self.gridLayout.addWidget(self.startTime, 0, 1, 1, 1)
         self.verticalLayout.addWidget(self.lyricGroup, 0, QtCore.Qt.AlignTop)
