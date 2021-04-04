@@ -27,13 +27,15 @@ class Main(QMainWindow, Ui_MainWindow):
     darkMode = False
     redMode = False
     blueMode = False
+    latestStartTime = QtCore.QTime(0, 0, 0)
+    latestEndTime = QtCore.QTime(0, 0, 0)
 
     def __init__(self):
         super(Main, self).__init__()
         self.setupUi(self)
 
         self.removeButton.clicked.connect(self.OnRemove)
-        self.addButton.clicked.connect(lambda:self.OnAdd())
+        self.addButton.clicked.connect(lambda:self.OnAddButton())
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
 
@@ -369,6 +371,16 @@ class Main(QMainWindow, Ui_MainWindow):
             del (self.lyricList[-1])
             self.progressBar.setProperty("value", 0)
 
+    def OnAddButton(self):
+        if self.lyricCount > 0:
+
+            endTimeObject = self.lyricList[self.lyricCount-1].findChild(QtWidgets.QTimeEdit, "endTime").time()
+            newTime = QtCore.QTime(0, endTimeObject.minute(), endTimeObject.second(), endTimeObject.msec() + 1)
+            self.OnAdd(start=newTime, end= newTime)
+        else:
+            self.OnAdd()
+
+
     def OnAdd(self, start = QtCore.QTime(0, 0, 0), end = QtCore.QTime(0, 0, 0), lyrics = ""):
         self.lyricGroup = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
@@ -449,6 +461,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lyricList.append(self.lyricGroup)
         self.lyricCount += 1
         self.progressBar.setProperty("value", 0)
+
 
     def IncreaseTime(self, endTime):
         if endTime.time().currentTime() <= self.startTime.time().currentTime():
