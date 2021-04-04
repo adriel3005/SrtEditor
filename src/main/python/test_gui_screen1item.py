@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.currentTime = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
-        font.setPointSize(15)
+        font.setPointSize(12)
         self.currentTime.setFont(font)
         self.currentTime.setText("")
         self.currentTime.setAlignment(QtCore.Qt.AlignCenter)
@@ -261,7 +261,7 @@ class Ui_MainWindow(object):
         self.createSRTButton.setText(_translate("MainWindow", "Crear SRT"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
-        self.actionInportar_Subtitulos_srt.setText(_translate("MainWindow", "Inportar Subtitulos srt"))
+        self.actionInportar_Subtitulos_srt.setText(_translate("MainWindow", "Importar Subtitulos srt"))
 import plusandminus_rc
 
 

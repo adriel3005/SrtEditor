@@ -12,10 +12,9 @@ from test_gui_screen1item import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 from google_trans_new import google_translator
 
-
 import sip
 import sys
-import numpy as np
+
 
 class Main(QMainWindow, Ui_MainWindow):
 
@@ -29,7 +28,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.removeButton.clicked.connect(self.OnRemove)
-        self.addButton.clicked.connect(self.OnAdd)
+        self.addButton.clicked.connect(lambda:self.OnAdd())
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
         #self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
@@ -106,11 +105,84 @@ class Main(QMainWindow, Ui_MainWindow):
             self.mediaPlayer.setMedia(
                 QMediaContent(QUrl.fromLocalFile(videoFilePath)))
             self.playButton.setEnabled(True)
-            self.statusBar.showMessage(fileName)
+            self.statusBar.showMessage(videoFilePath)
             self.play()
             self.videoPath = videoFilePath
             self.videoName = self.videoPath.split("/")[-1]
 
+            # Delete existing objects
+            count = self.lyricCount
+            for i in range(count):
+                self.OnRemove()
+
+            # Create video objects
+            self.CreateLyricObjectsFromSRT(fileName)
+
+    def CreateLyricObjectsFromSRT(self, path):
+        srtFile = open(path, "r", encoding="utf-8")
+
+        # General srt format is
+        # index
+        # start time --> end time
+        # lyrics
+        # empty line
+
+        #--- Temp variables
+        index = 1
+        foundStart = False
+        foundEnd = False
+        foundLyrics = False
+        lyricsString = ""
+        subStringTime = "-->"
+        startString = ""
+        endString = ""
+        # iterate through srt file
+        for line in srtFile:
+            # after times is lyrics
+            if foundStart and foundEnd and not foundLyrics:
+                # until we find empty
+                if line == "\n":
+                    foundLyrics = True
+
+                if lyricsString != "":
+                    lyricsString = lyricsString + line.strip('\n').rstrip()
+                else:
+                    lyricsString = line
+            # times
+            if subStringTime in line:
+                startString = line.split(" --> ")[0].rstrip()
+                endString = line.split(" --> ")[-1].rstrip()
+                if startString != "":
+                    foundStart = True
+                else:
+                    print("No start time for item", index)
+                if endString != "":
+                    foundEnd = True
+                else:
+                    print("No end time for item ", index)
+            index = index + 1
+            if foundLyrics and startString != "" and endString != "":
+                #Create lyrics object here
+
+                startQTime = self.ReturnQTimeObject(startString)
+                endQtime = self.ReturnQTimeObject(endString)
+
+                self.OnAdd(start = startQTime, end = endQtime, lyrics= lyricsString )
+                lyricsString = ""
+                foundLyrics = False
+                foundStart = False
+                foundEnd = False
+
+        srtFile.close()
+
+    def ReturnQTimeObject(self, timeString):
+        hours = timeString.split(":")[0]
+        minutes = timeString.split(":")[1]
+        secondsAndMsec = timeString.split(":")[2]
+        seconds = secondsAndMsec.split(",")[0]
+        mSeconds = secondsAndMsec.split(",")[1]
+
+        return QtCore.QTime(int(hours), int(minutes), int(seconds), int(mSeconds))
 
 
     def TimeSkip(self, amount, forward):
@@ -197,7 +269,7 @@ class Main(QMainWindow, Ui_MainWindow):
             del (self.lyricList[-1])
             self.progressBar.setProperty("value", 0)
 
-    def OnAdd(self):
+    def OnAdd(self, start = QtCore.QTime(0, 0, 0), end = QtCore.QTime(0, 0, 0), lyrics = ""):
         self.lyricGroup = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -223,6 +295,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lyricsText = QtWidgets.QPlainTextEdit(self.lyricGroup)
         self.lyricsText.setObjectName("lyricsText")
         self.lyricsText.setFont(font)
+        self.lyricsText.setPlainText(lyrics)
         self.gridLayout.addWidget(self.lyricsText, 0, 2, 2, 1)
         self.endLabel = QtWidgets.QLabel(self.lyricGroup)
         font = QtGui.QFont()
@@ -247,6 +320,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.endTime.setDisplayFormat("mm:ss:zzz")
         self.gridLayout.addWidget(self.endTime, 1, 1, 1, 1)
         self.endTime.setCurrentSectionIndex(0)
+        self.endTime.setTime(end)
 
 
         self.startTime = QtWidgets.QTimeEdit(self.lyricGroup)
@@ -263,7 +337,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startTime.setCurrentSection(QtWidgets.QDateTimeEdit.MSecSection)
         self.startTime.setCurrentSection(2)
         self.startTime.setCurrentSectionIndex(2)
-        self.startTime.setTime(QtCore.QTime(0, 0, 0))
+        self.startTime.setTime(start)
         self.startTime.setObjectName("startTime")
         self.startTime.setDisplayFormat("mm:ss:zzz")
         self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
@@ -328,12 +402,12 @@ class Main(QMainWindow, Ui_MainWindow):
 
                 if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result + "\n")
+                    srtFile.write("\n" + result.rstrip() + "\n")
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
                     srtFile.write(itemSelected + result.rstrip() + itemSelected + "\n\n")
                 elif self.translateEnglish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result + "\n\n")
+                    srtFile.write("\n" + result.rstrip() + "\n\n")
                 elif self.translateSpanish.isChecked():
                     result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
                     srtFile.write("\n" + itemSelected + result.rstrip() + itemSelected + "\n\n")
@@ -391,7 +465,6 @@ class Main(QMainWindow, Ui_MainWindow):
             if currentTime >= startTotal and currentTime <= endTotal:
                 childLyricsText = self.lyricList[i].findChild(QtWidgets.QPlainTextEdit, "lyricsText")
                 self.currentLyrics.setText(childLyricsText.toPlainText())
-                print("we in object ", i)
                 showingLyrics = True
         if showingLyrics == False:
             self.currentLyrics.setText("")
@@ -407,6 +480,7 @@ if __name__ == '__main__':
     appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
     #app = QApplication(sys.argv)
     window = Main()
+    appctxt.app.setStyle('Fusion')
     #window.resize(250, 150)
     #window.show()
     window.showMaximized()

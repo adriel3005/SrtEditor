@@ -474,7 +474,7 @@
   </action>
   <action name="actionInportar_Subtitulos_srt">
    <property name="text">
-    <string>Inportar Subtitulos srt</string>
+    <string>Importar Subtitulos srt</string>
    </property>
   </action>
  </widget>
