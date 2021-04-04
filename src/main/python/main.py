@@ -15,6 +15,7 @@ from google_trans_new import google_translator
 import sip
 import sys
 import qdarkstyle
+import subprocess
 
 
 class Main(QMainWindow, Ui_MainWindow):
@@ -397,9 +398,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
         # Check to see if file has been open
         if self.videoPath:
-            self.newVideoPath = self.videoPath.split(".")[0]
-            print(self.newVideoPath + ".srt")
-            srtFile = open(self.newVideoPath + ".srt", "w", encoding="utf-8")
+            self.newVideoPath = self.videoPath.split(".")[0] + ".srt"
+            srtFile = open(self.newVideoPath, "w", encoding="utf-8")
 
             for i in range(len(self.lyricList)):
                 # lyrics
@@ -449,6 +449,11 @@ class Main(QMainWindow, Ui_MainWindow):
                 print(int(progress*100))
                 self.progressBar.setProperty("value", int(progress*100))
                 self.progressCount += 1
+
+                if progress == 1:
+                    print(self.newVideoPath)
+                    openPath = self.newVideoPath.replace('/', '\\')
+                    subprocess.Popen(r'explorer /select,"'+openPath+'"')
 
         else:
             self.ShowPopUpMessage()
