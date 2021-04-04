@@ -2,7 +2,7 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QStyle, QSlider, QStatusBar
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import QDir, Qt, QUrl, QSize, QThread, pyqtSignal
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QPalette, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import  QVideoWidget
 #from SRT_GUI_Skeleton import Ui_MainWindow
@@ -14,6 +14,7 @@ from google_trans_new import google_translator
 
 import sip
 import sys
+import qdarkstyle
 
 
 class Main(QMainWindow, Ui_MainWindow):
@@ -22,6 +23,7 @@ class Main(QMainWindow, Ui_MainWindow):
     lyricCount = 0
     videoPath = ""
     videoName = ""
+    darkMode = False
 
     def __init__(self):
         super(Main, self).__init__()
@@ -31,7 +33,9 @@ class Main(QMainWindow, Ui_MainWindow):
         self.addButton.clicked.connect(lambda:self.OnAdd())
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
-        #self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+
+        #Dark Mode
+        self.actionDark_Mode.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
 
         #Video
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
@@ -94,6 +98,34 @@ class Main(QMainWindow, Ui_MainWindow):
 
         #Import srt
         self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
+
+    def ToggleDarkMode(self, dark):
+
+        if not dark:
+            dark_palette = QPalette()
+
+            dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+            dark_palette.setColor(QPalette.WindowText, Qt.white)
+            dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+            dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+            dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+            dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+            dark_palette.setColor(QPalette.Text, Qt.white)
+            dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+            dark_palette.setColor(QPalette.ButtonText, Qt.white)
+            dark_palette.setColor(QPalette.BrightText, Qt.red)
+            dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+            dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+            dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+
+            appctxt.app.setPalette(dark_palette)
+            #appctxt.app.setStyleSheet(
+            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+            self.darkMode = True
+        else:
+            light_palette = QPalette()
+            appctxt.app.setPalette(light_palette)
+            self.darkMode = False
 
     # Currently only supports mp4
     def ImportSRT(self):
@@ -480,7 +512,29 @@ if __name__ == '__main__':
     appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
     #app = QApplication(sys.argv)
     window = Main()
-    appctxt.app.setStyle('Fusion')
+
+    appctxt.app.setStyle("Fusion")
+
+    # dark_palette = QPalette()
+    #
+    # dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    # dark_palette.setColor(QPalette.WindowText, Qt.white)
+    # dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    # dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    # dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+    # dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+    # dark_palette.setColor(QPalette.Text, Qt.white)
+    # dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    # dark_palette.setColor(QPalette.ButtonText, Qt.white)
+    # dark_palette.setColor(QPalette.BrightText, Qt.red)
+    # dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    # dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    # dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+    #
+    # appctxt.app.setPalette(dark_palette)
+    # appctxt.app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+
+    #appctxt.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     #window.resize(250, 150)
     #window.show()
     window.showMaximized()

@@ -433,9 +433,6 @@
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(169, 180, 200);</string>
-      </property>
       <property name="text">
        <string>Crear SRT</string>
       </property>
@@ -463,6 +460,7 @@
      <string>File</string>
     </property>
     <addaction name="actionInportar_Subtitulos_srt"/>
+    <addaction name="actionDark_Mode"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -475,6 +473,11 @@
   <action name="actionInportar_Subtitulos_srt">
    <property name="text">
     <string>Importar Subtitulos srt</string>
+   </property>
+  </action>
+  <action name="actionDark_Mode">
+   <property name="text">
+    <string>Dark Mode</string>
    </property>
   </action>
  </widget>

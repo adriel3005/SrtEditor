@@ -210,7 +210,6 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.createSRTButton.setFont(font)
         self.createSRTButton.setAutoFillBackground(False)
-        self.createSRTButton.setStyleSheet("background-color: rgb(169, 180, 200);")
         self.createSRTButton.setCheckable(False)
         self.createSRTButton.setObjectName("createSRTButton")
         self.gridLayout.addWidget(self.createSRTButton, 6, 0, 1, 1)
@@ -229,7 +228,10 @@ class Ui_MainWindow(object):
         self.actionOpen_Video.setObjectName("actionOpen_Video")
         self.actionInportar_Subtitulos_srt = QtWidgets.QAction(MainWindow)
         self.actionInportar_Subtitulos_srt.setObjectName("actionInportar_Subtitulos_srt")
+        self.actionDark_Mode = QtWidgets.QAction(MainWindow)
+        self.actionDark_Mode.setObjectName("actionDark_Mode")
         self.menuFile.addAction(self.actionInportar_Subtitulos_srt)
+        self.menuFile.addAction(self.actionDark_Mode)
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -262,6 +264,7 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
         self.actionInportar_Subtitulos_srt.setText(_translate("MainWindow", "Importar Subtitulos srt"))
+        self.actionDark_Mode.setText(_translate("MainWindow", "Dark Mode"))
 import plusandminus_rc
 
 
