@@ -4,7 +4,22 @@ GUI to create SRT files.
 * Media player that allows .srt files (e.g. VLC)
 * Basic K-Lite Codec Pack (see: https://codecguide.com/download_kl.htm)
 * Anaconda (see: https://docs.anaconda.com/anaconda/install/windows/)
-  * Import srt_env.yml file to use as an environment
+# Setup
+1. Once all the pre-requisites are installed, open Anaconda Navigator.
+2. Select the **Environments** tab.
+
+![image](https://user-images.githubusercontent.com/30638262/154813635-9c253ddf-2623-4dc0-96ec-3d75becedbb5.png)
+
+3.Select the **Import** Icon and import the srt_env.yml file as an environment.
+
+![image](https://user-images.githubusercontent.com/30638262/154813698-12e87249-c7b7-4315-bc09-5013d8edbb68.png)
+
+4. Once imported, use an IDE, Pycharm in this case, to open the project.
+5. Set main.py as your main file to run (script path) and your newly imported environment as the Python interpreter.
+
+![image](https://user-images.githubusercontent.com/30638262/154813914-8b79e951-1e26-4307-9aec-52f5f391239f.png)
+
+6. Run 'main'.
 # Basic Usage
 1. Open video by clicking "Abrir Video"
 2. Begin adding lyrics
