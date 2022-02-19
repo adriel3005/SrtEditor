@@ -1,25 +1,44 @@
 # SrtEditor
 GUI to create SRT files.
 # Prerequisites 
-* Media player that allows .srt files (e.g. VLC)
-* Basic K-Lite Codec Pack (see: https://codecguide.com/download_kl.htm)
-* Anaconda (see: https://docs.anaconda.com/anaconda/install/windows/)
+* Media player that allows .srt files (Example: [VLC](https://www.videolan.org/vlc/download-windows.html))
+* [Basic K-Lite Codec Pack](https://codecguide.com/download_kl.htm)
+* [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 # Setup
-1. Once all the pre-requisites are installed, open Anaconda Navigator.
-2. Select the **Environments** tab.
+### Windows
+1. Add Miniconda to Path in System Variables to be able to use conda commands in Terminal of choice.
+   - Go to System Properties -> Advanced Tab -> Environment Variables
+   - Under System Variables, Select **Path** and **Edit**
+   - Add Miniconda home folder and Scripts folder. 
+     - C:\Users\\**youruser**\miniconda3
+     - C:\Users\\**youruser**\miniconda3\Scripts
+    - Select **Ok** and **Apply** where necessary.
+2. Create environment ( See: [Creating environment from existing yml file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) )
+   - Open preferred terminal and run `conda env create -f pathtoymlfile`
+     - Replace `pathtoymlfile` with directory to yml file in repository (Example: C:\SrtEditor\srt_env.yml)
+3. Test environment by using `conda activate srt` or just `activate srt` if first command does not work.
+4. Deactive the environment by using `conda deactivate`.
+5. Open project in Pycharm.
+6. Add Python Interpreter
+   - Open **Settings** by pressing **Ctrl + Alt + S** simultaneously or by selecting **Settings** under **File**.
+   - Select **Python Interpreter** under  **Project**.
+   - Select the "Gear" icon and then **Add** to create a new Python interpreter.
+   - Select **Conda Environment** and then **Existing environment**.
+   - The recently created srt environment and conda executable should be selected.
+     - If not already selected, add the environment python.exe directory as interpreter path 
+       (C:\Users\\**youruser**\miniconda2\env\srt\python.exe) 
+     - If not already selected, add the conda executable directory as well
+       (C:\Users\\**youruser**\miniconda3\Scripts\conda.exe) 
+   - Press **Apply** and **Ok** to save changes. 
+7. Add Configuration
+   - Add new Python Configuration and name it accordingly
+   - Select the main.py directory as **Script Path**
+     (C:\SrtEditor\src\main\python\main.py)
+   - Select recently created interpreter as the project's Python Interpreter.
+   - Select **Apply** and **Ok** to save changes.
+8. Run project.
 
-![image](https://user-images.githubusercontent.com/30638262/154813635-9c253ddf-2623-4dc0-96ec-3d75becedbb5.png)
 
-3.Select the **Import** Icon and import the srt_env.yml file as an environment.
-
-![image](https://user-images.githubusercontent.com/30638262/154813698-12e87249-c7b7-4315-bc09-5013d8edbb68.png)
-
-4. Once imported, use an IDE, Pycharm in this case, to open the project.
-5. Set main.py as your main file to run (script path) and your newly imported environment as the Python interpreter.
-
-![image](https://user-images.githubusercontent.com/30638262/154813914-8b79e951-1e26-4307-9aec-52f5f391239f.png)
-
-6. Run 'main'.
 # Basic Usage
 1. Open video by clicking "Abrir Video"
 2. Begin adding lyrics
