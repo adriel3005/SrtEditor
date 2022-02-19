@@ -3,6 +3,8 @@ GUI to create SRT files.
 # Prerequisites 
 * Media player that allows .srt files (e.g. VLC)
 * Basic K-Lite Codec Pack (see: https://codecguide.com/download_kl.htm)
+* Anaconda (see: https://docs.anaconda.com/anaconda/install/windows/)
+  * Import srt_env.yml file to use as an environment
 # Basic Usage
 1. Open video by clicking "Abrir Video"
 2. Begin adding lyrics
