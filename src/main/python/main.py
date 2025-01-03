@@ -4,10 +4,10 @@ from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import QDir, Qt, QUrl, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont, QPalette, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtMultimediaWidgets import  QVideoWidget
-#from SRT_GUI_Skeleton import Ui_MainWindow
-from test_gui_screen1item import Ui_MainWindow
-#from test_gui_screen1itempromotedlyrics import Ui_MainWindow
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+# from SRT_GUI_Skeleton import Ui_MainWindow
+from test_gui_screen2item import Ui_MainWindow
+# from test_gui_screen1itempromotedlyrics import Ui_MainWindow
 # import from below allows the OnAdd function to work
 from PyQt5 import QtCore, QtGui, QtWidgets
 from google_trans_new import google_translator
@@ -16,10 +16,11 @@ import sip
 import sys
 import qdarkstyle
 import subprocess
+import whisper
+from datetime import timedelta
 
 
 class Main(QMainWindow, Ui_MainWindow):
-
     lyricList = []
     lyricCount = 0
     videoPath = ""
@@ -35,17 +36,17 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.removeButton.clicked.connect(self.OnRemove)
-        self.addButton.clicked.connect(lambda:self.OnAddButton())
+        self.addButton.clicked.connect(lambda: self.OnAddButton())
         self.createSRTButton.clicked.connect(self.CreateSRT)
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
 
-        #Modes
+        # Modes
         self.actionDark_Mode_2.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
         self.actionLight_Mode.triggered.connect(self.ToggleLightMode)
         self.actionRed_Palette.triggered.connect(lambda: self.ToggleRedMode(self.redMode))
         self.actionBlue_Palette.triggered.connect(lambda: self.ToggleBlueMode(self.blueMode))
 
-        #Video
+        # Video
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         btnSize = QSize(16, 16)
@@ -82,7 +83,7 @@ class Main(QMainWindow, Ui_MainWindow):
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.positionSlider)
 
-        #self.QVideoBoxVLayout = QVBoxLayout()
+        # self.QVideoBoxVLayout = QVBoxLayout()
         self.QVideoBoxVLayout.addWidget(videoWidget)
         self.QVideoBoxVLayout.addLayout(controlLayout)
         self.QVideoBoxVLayout.addWidget(self.statusBar)
@@ -107,8 +108,11 @@ class Main(QMainWindow, Ui_MainWindow):
         self.tenForward.clicked.connect(lambda: self.TimeSkip(10, True))
         self.oneMForward.clicked.connect(lambda: self.TimeSkip(.1, True))
 
-        #Import srt
+        # Import srt
         self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
+        # Auto Generate Subtitles
+        self.actionAuto_Generar_Subtitulos.triggered.connect(self.GenerateSRT)
+
     def ToggleLightMode(self):
         light_palette = QPalette()
         appctxt.app.setPalette(light_palette)
@@ -118,7 +122,7 @@ class Main(QMainWindow, Ui_MainWindow):
         if not dark:
             red_palette = QPalette()
 
-            red_palette.setColor(QPalette.Window, QColor(100,53,53))
+            red_palette.setColor(QPalette.Window, QColor(100, 53, 53))
             red_palette.setColor(QPalette.WindowText, Qt.white)
             red_palette.setColor(QPalette.Base, QColor(25, 25, 25))
             red_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
@@ -133,7 +137,7 @@ class Main(QMainWindow, Ui_MainWindow):
             red_palette.setColor(QPalette.HighlightedText, Qt.black)
 
             appctxt.app.setPalette(red_palette)
-            #appctxt.app.setStyleSheet(
+            # appctxt.app.setStyleSheet(
             #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
             self.redMode = True
         else:
@@ -146,7 +150,7 @@ class Main(QMainWindow, Ui_MainWindow):
         if not dark:
             blue_palette = QPalette()
 
-            blue_palette.setColor(QPalette.Window, QColor(53,53,100))
+            blue_palette.setColor(QPalette.Window, QColor(53, 53, 100))
             blue_palette.setColor(QPalette.WindowText, Qt.white)
             blue_palette.setColor(QPalette.Base, QColor(25, 25, 25))
             blue_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
@@ -161,7 +165,7 @@ class Main(QMainWindow, Ui_MainWindow):
             blue_palette.setColor(QPalette.HighlightedText, Qt.black)
 
             appctxt.app.setPalette(blue_palette)
-            #appctxt.app.setStyleSheet(
+            # appctxt.app.setStyleSheet(
             #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
             self.blueMode = True
         else:
@@ -174,7 +178,7 @@ class Main(QMainWindow, Ui_MainWindow):
         if not dark:
             dark_palette = QPalette()
 
-            dark_palette.setColor(QPalette.Window, QColor(53,53,53))
+            dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
             dark_palette.setColor(QPalette.WindowText, Qt.white)
             dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
             dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
@@ -189,13 +193,35 @@ class Main(QMainWindow, Ui_MainWindow):
             dark_palette.setColor(QPalette.HighlightedText, Qt.black)
 
             appctxt.app.setPalette(dark_palette)
-            #appctxt.app.setStyleSheet(
+            # appctxt.app.setStyleSheet(
             #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
             self.darkMode = True
         else:
             light_palette = QPalette()
             appctxt.app.setPalette(light_palette)
             self.darkMode = False
+
+    def GenerateSRT(self):
+        model = whisper.load_model("turbo")
+        result = model.transcribe(self.videoPath)
+        print(result["text"])
+        # startQTime = self.ReturnQTimeObject(startString)
+        # endQtime = self.ReturnQTimeObject(endString)
+        # self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
+        if len(result["segments"]) > 0:
+            self.RemoveAll()
+            for segment in result["segments"]:
+                startTime = str(0) + str(timedelta(seconds=int(segment['start']))) + ',000'
+                endTime = str(0) + str(timedelta(seconds=int(segment['end']))) + ',000'
+                text = segment['text']
+                segmentId = segment['id'] + 1
+                segment = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] is ' ' else text}\n\n"
+                startQTime = self.ReturnQTimeObject(startTime)
+                endQTime = self.ReturnQTimeObject(endTime)
+                self.OnAdd(start=startQTime, end=endQTime, lyrics=text[1:] if text[0] is ' ' else text)
+                # srtFilename = os.path.join("SrtFiles", f"VIDEO_FILENAME.srt")
+                # with open(srtFilename, 'a', encoding='utf-8') as srtFile:
+                #    srtFile.write(segment)
 
     # Currently only supports mp4
     def ImportSRT(self):
@@ -229,7 +255,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # lyrics
         # empty line
 
-        #--- Temp variables
+        # --- Temp variables
         index = 1
         foundStart = False
         foundEnd = False
@@ -264,12 +290,12 @@ class Main(QMainWindow, Ui_MainWindow):
                     print("No end time for item ", index)
             index = index + 1
             if foundLyrics and startString != "" and endString != "":
-                #Create lyrics object here
+                # Create lyrics object here
 
                 startQTime = self.ReturnQTimeObject(startString)
                 endQtime = self.ReturnQTimeObject(endString)
 
-                self.OnAdd(start = startQTime, end = endQtime, lyrics= lyricsString )
+                self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
                 lyricsString = ""
                 foundLyrics = False
                 foundStart = False
@@ -286,7 +312,6 @@ class Main(QMainWindow, Ui_MainWindow):
 
         return QtCore.QTime(int(hours), int(minutes), int(seconds), int(mSeconds))
 
-
     def TimeSkip(self, amount, forward):
         if forward:
             tempPosition = self.mediaPlayer.position()
@@ -294,7 +319,6 @@ class Main(QMainWindow, Ui_MainWindow):
         else:
             tempPosition = self.mediaPlayer.position()
             self.setPosition(tempPosition - int(amount * 1000))
-
 
     def SetCurrentTimeText(self, millis):
         millis = int(millis)
@@ -309,9 +333,9 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.currentTime.setText("Tiempo Actual " + sMinutes + ":" + sSeconds + ":" + sMillis)
 
-
     def open(self):
-        fileName, _ = QFileDialog.getOpenFileName(self, "Selecciona los mediose",".", "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
+        fileName, _ = QFileDialog.getOpenFileName(self, "Selecciona los mediose", ".",
+                                                  "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
 
         if fileName != '':
             self.mediaPlayer.setMedia(
@@ -323,11 +347,12 @@ class Main(QMainWindow, Ui_MainWindow):
             self.videoName = self.videoPath.split("/")[-1]
 
     def OpenVideoFile(self):
-        #self.videoPath, _ = QFileDialog.getOpenFileName(self, 'Open File', options=QFileDialog.DontUseNativeDialog)
+        # self.videoPath, _ = QFileDialog.getOpenFileName(self, 'Open File', options=QFileDialog.DontUseNativeDialog)
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        self.videoPath, _ = QFileDialog.getOpenFileName(self,"Select Video File", "","Video File (*.mp4 *.avi *.ogv)", options=options)
+        self.videoPath, _ = QFileDialog.getOpenFileName(self, "Select Video File", "", "Video File (*.mp4 *.avi *.ogv)",
+                                                        options=options)
         self.videoName = self.videoPath.split("/")[-1]
 
     def play(self):
@@ -362,9 +387,17 @@ class Main(QMainWindow, Ui_MainWindow):
         self.playButton.setEnabled(False)
         self.statusBar.showMessage("Error: " + self.mediaPlayer.errorString())
 
+    def RemoveAll(self):
+        if len(self.lyricList) > 0:
+            while len(self.lyricList) > 0:
+                self.verticalLayout.removeWidget(self.lyricList[-1])
+                sip.delete(self.lyricList[-1])
+                self.lyricCount -= 1
+                del (self.lyricList[-1])
+                self.progressBar.setProperty("value", 0)
 
     def OnRemove(self):
-        if len(self.lyricList) > 0 :
+        if len(self.lyricList) > 0:
             self.verticalLayout.removeWidget(self.lyricList[-1])
             sip.delete(self.lyricList[-1])
             self.lyricCount -= 1
@@ -374,9 +407,9 @@ class Main(QMainWindow, Ui_MainWindow):
     def OnAddButton(self):
         if self.lyricCount > 0:
 
-            endTimeObject = self.lyricList[self.lyricCount-1].findChild(QtWidgets.QTimeEdit, "endTime").time()
+            endTimeObject = self.lyricList[self.lyricCount - 1].findChild(QtWidgets.QTimeEdit, "endTime").time()
             newTime = QtCore.QTime(0, endTimeObject.minute(), endTimeObject.second(), endTimeObject.msec() + 1)
-            self.OnAdd(start=newTime, end= newTime)
+            self.OnAdd(start=newTime, end=newTime)
             self.scrollArea.ensureWidgetVisible(self.lyricGroup)
             max = self.scrollArea.verticalScrollBar().maximum()
             self.scrollArea.verticalScrollBar().setValue(999999)
@@ -386,8 +419,7 @@ class Main(QMainWindow, Ui_MainWindow):
             max = self.scrollArea.verticalScrollBar().maximum()
             self.scrollArea.verticalScrollBar().setValue(max)
 
-
-    def OnAdd(self, start = QtCore.QTime(0, 0, 0), end = QtCore.QTime(0, 0, 0), lyrics = ""):
+    def OnAdd(self, start=QtCore.QTime(0, 0, 0), end=QtCore.QTime(0, 0, 0), lyrics=""):
         self.lyricGroup = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -440,7 +472,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.endTime.setCurrentSectionIndex(0)
         self.endTime.setTime(end)
 
-
         self.startTime = QtWidgets.QTimeEdit(self.lyricGroup)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -458,7 +489,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startTime.setTime(start)
         self.startTime.setObjectName("startTime")
         self.startTime.setDisplayFormat("mm:ss:zzz")
-        #self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
+        # self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
 
         self.gridLayout.addWidget(self.startTime, 0, 1, 1, 1)
         self.verticalLayout.addWidget(self.lyricGroup, 0, QtCore.Qt.AlignTop)
@@ -468,13 +499,11 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lyricCount += 1
         self.progressBar.setProperty("value", 0)
 
-
     def IncreaseTime(self, endTime):
         if endTime.time().currentTime() <= self.startTime.time().currentTime():
-            startTimeObject =  self.startTime.time()
+            startTimeObject = self.startTime.time()
             newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec())
             endTime.setTime(newTime)
-
 
     def CreateSRT(self):
         # For progress bar
@@ -485,7 +514,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # Check to see if file has been open
         if self.videoPath:
 
-            self.newVideoPath = self.videoPath.split(".")[0]+ " - NoTranslation" + ".srt"
+            self.newVideoPath = self.videoPath.split(".")[0] + " - NoTranslation" + ".srt"
             srtFile = open(self.newVideoPath, "w", encoding="utf-8")
 
             if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
@@ -509,7 +538,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 # end Time
                 childEndTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "endTime").time()
 
-                #print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
+                # print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
                 #    childStartTime.msec()))
 
                 # Number of iteration
@@ -519,13 +548,13 @@ class Main(QMainWindow, Ui_MainWindow):
                 minuteTime = self.TwoCharSyntax(str(childStartTime.minute()))
                 secondTime = self.TwoCharSyntax(str(childStartTime.second()))
                 mSecTime = self.ThreeCharSyntax(str(childStartTime.msec()))
-                srtFile.write("00:"+minuteTime+":"+secondTime+","+mSecTime + " --> ")
+                srtFile.write("00:" + minuteTime + ":" + secondTime + "," + mSecTime + " --> ")
 
                 # end time
                 minuteTime = self.TwoCharSyntax(str(childEndTime.minute()))
                 secondTime = self.TwoCharSyntax(str(childEndTime.second()))
                 mSecTime = self.ThreeCharSyntax(str(childEndTime.msec()))
-                srtFile.write("00:"+minuteTime + ":" + secondTime + "," + mSecTime)
+                srtFile.write("00:" + minuteTime + ":" + secondTime + "," + mSecTime)
 
                 # Lyrics
 
@@ -543,14 +572,14 @@ class Main(QMainWindow, Ui_MainWindow):
                 else:
                     srtFile.write("\n" + childLyricsText.toPlainText().replace("\n", " ") + "\n\n")
                 progress = self.progressCount / self.lyricCount
-                print(int(progress*100))
-                self.progressBar.setProperty("value", int(progress*100))
+                print(int(progress * 100))
+                self.progressBar.setProperty("value", int(progress * 100))
                 self.progressCount += 1
 
                 if progress == 1:
                     print(self.newVideoPath)
                     openPath = self.newVideoPath.replace('/', '\\')
-                    subprocess.Popen(r'explorer /select,"'+openPath+'"')
+                    subprocess.Popen(r'explorer /select,"' + openPath + '"')
 
         else:
             self.ShowPopUpMessage()
@@ -558,11 +587,11 @@ class Main(QMainWindow, Ui_MainWindow):
     # check if string is only 1 character
     def TwoCharSyntax(self, str):
         if len(str) != 2:
-            return "0"+str
+            return "0" + str
         else:
             return str
 
-    #Make into 3 char
+    # Make into 3 char
     def ThreeCharSyntax(self, str):
         if len(str) == 1:
             return "00" + str
@@ -609,6 +638,7 @@ class Main(QMainWindow, Ui_MainWindow):
         errorMsg.setText("Por favor selecciona un video primero")
         x = errorMsg.exec_()
 
+
 class WheelEventFilter(QtCore.QObject):
     def eventFilter(self, obj, ev):
         if obj.inherits("QTimeEdit") and ev.type() == QtCore.QEvent.Wheel:
@@ -617,8 +647,8 @@ class WheelEventFilter(QtCore.QObject):
 
 
 if __name__ == '__main__':
-    appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
-    #app = QApplication(sys.argv)
+    appctxt = ApplicationContext()  # 1. Instantiate ApplicationContext
+    # app = QApplication(sys.argv)
     window = Main()
 
     appctxt.app.setStyle("Fusion")
@@ -646,11 +676,10 @@ if __name__ == '__main__':
     # appctxt.app.setPalette(dark_palette)
     # appctxt.app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
 
-    #appctxt.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    #window.resize(250, 150)
-    #window.show()
+    # appctxt.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    # window.resize(250, 150)
+    # window.show()
     window.showMaximized()
 
-
-    exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
+    exit_code = appctxt.app.exec_()  # 2. Invoke appctxt.app.exec_()
     sys.exit(exit_code)
