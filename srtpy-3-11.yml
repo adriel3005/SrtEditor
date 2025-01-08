@@ -41,7 +41,7 @@ dependencies:
     - networkx==3.3
     - numba==0.60.0
     - numpy==1.24.1
-    - openai-whisper==20231117
+    - openai-whisper==20240930
     - packaging==24.1
     - pefile==2024.8.26
     - pyinstaller==3.4
