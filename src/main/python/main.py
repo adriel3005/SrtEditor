@@ -6,6 +6,7 @@ from PyQt5.QtGui import QIcon, QFont, QPalette, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 # from SRT_GUI_Skeleton import Ui_MainWindow
+from src.main.python.LyricGroup import LyricGroup
 from test_gui_screen2item import Ui_MainWindow
 # from test_gui_screen1itempromotedlyrics import Ui_MainWindow
 # import from below allows the OnAdd function to work
@@ -239,8 +240,10 @@ class Main(QMainWindow, Ui_MainWindow):
             self.videoName = self.videoPath.split("/")[-1]
 
             # Delete existing objects
-            count = self.lyricCount
-            for i in range(count):
+            #count = self.lyricCount
+            # TODO: double check if lyricList is and skip on remove if so
+            #       since we are now using lyricList.count instead of lyricCount we need to check if accurate.
+            for i in range(len(self.lyricList) - 1):
                 self.OnRemove()
 
             # Create video objects
@@ -295,7 +298,10 @@ class Main(QMainWindow, Ui_MainWindow):
                 startQTime = self.ReturnQTimeObject(startString)
                 endQtime = self.ReturnQTimeObject(endString)
 
-                self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
+                # TODO: test this still works after changes
+                lyricBoxToAdd = self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
+                self.AddToList(lyricGroup=lyricBoxToAdd)
+
                 lyricsString = ""
                 foundLyrics = False
                 foundStart = False
@@ -405,99 +411,72 @@ class Main(QMainWindow, Ui_MainWindow):
             self.progressBar.setProperty("value", 0)
 
     def OnAddButton(self):
-        if self.lyricCount > 0:
-
-            endTimeObject = self.lyricList[self.lyricCount - 1].findChild(QtWidgets.QTimeEdit, "endTime").time()
-            newTime = QtCore.QTime(0, endTimeObject.minute(), endTimeObject.second(), endTimeObject.msec() + 1)
-            self.OnAdd(start=newTime, end=newTime)
-            self.scrollArea.ensureWidgetVisible(self.lyricGroup)
-            max = self.scrollArea.verticalScrollBar().maximum()
-            self.scrollArea.verticalScrollBar().setValue(999999)
-
+        if self.lyricList:
+            lastLyric = self.lyricList[-1]
+            endTime = lastLyric.endTime.time()
+            newTime = QtCore.QTime(0, endTime.minute(), endTime.second(), endTime.msec() + 1)
+            lyricBoxToAdd = self.OnAdd(start=newTime, end=newTime)
         else:
-            self.OnAdd()
-            max = self.scrollArea.verticalScrollBar().maximum()
-            self.scrollArea.verticalScrollBar().setValue(max)
+            lyricBoxToAdd = self.OnAdd()
+
+        self.AddToList(lyricGroup=lyricBoxToAdd)
+        self.scrollArea.ensureWidgetVisible(lyricBoxToAdd)
+        self.scrollArea.verticalScrollBar().setValue(self.scrollArea.verticalScrollBar().maximum())
 
     def OnAdd(self, start=QtCore.QTime(0, 0, 0), end=QtCore.QTime(0, 0, 0), lyrics=""):
-        self.lyricGroup = QtWidgets.QWidget(self.scrollAreaWidgetContents)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lyricGroup.sizePolicy().hasHeightForWidth())
-        self.lyricGroup.setSizePolicy(sizePolicy)
-        self.lyricGroup.setMinimumSize(QtCore.QSize(0, 150))
-        self.lyricGroup.setMaximumSize(QtCore.QSize(600, 100))
-        self.lyricGroup.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.lyricGroup.setObjectName("lyricGroup")
+        group = LyricGroup(
+            start=start,
+            end=end,
+            lyrics=lyrics,
+            count=self.lyricCount,
+            parent=self.scrollAreaWidgetContents,
+            on_add=self.OnAddAfter,
+            on_remove=self.OnRemove
+        )
+        group.setProperty("position", len(self.lyricList))
+        return group
 
-        self.gridLayout = QtWidgets.QGridLayout(self.lyricGroup)
-        self.gridLayout.setObjectName("gridLayout")
-        self.startLabel = QtWidgets.QLabel(self.lyricGroup)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.startLabel.setFont(font)
-        self.startLabel.setObjectName("startLabel")
-        self.startLabel.setText("Inicio:")
-        self.gridLayout.addWidget(self.startLabel, 0, 0, 1, 1)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.lyricsText = QtWidgets.QPlainTextEdit(self.lyricGroup)
-        self.lyricsText.setObjectName("lyricsText")
-        self.lyricsText.setFont(font)
-        self.lyricsText.setPlainText(lyrics)
-        self.gridLayout.addWidget(self.lyricsText, 0, 2, 2, 1)
-        self.endLabel = QtWidgets.QLabel(self.lyricGroup)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.endLabel.setFont(font)
-        self.endLabel.setObjectName("endLabel")
-        self.endLabel.setText("Final:")
-        self.gridLayout.addWidget(self.endLabel, 1, 0, 1, 1)
+    def OnRemove(self, groupToRemove):
+        if groupToRemove in self.lyricList:
+            index = self.lyricList.index(groupToRemove)
+            self.lyricList.pop(index)
 
-        self.endTime = QtWidgets.QTimeEdit(self.lyricGroup)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.endTime.sizePolicy().hasHeightForWidth())
-        self.endTime.setSizePolicy(sizePolicy)
-        self.endTime.setMinimumSize(QtCore.QSize(100, 30))
-        self.endTime.setMaximumSize(QtCore.QSize(75, 16777215))
-        font = QtGui.QFont()
-        font.setPointSize(11)
-        self.endTime.setFont(font)
-        self.endTime.setObjectName("endTime")
-        self.endTime.setDisplayFormat("mm:ss:zzz")
-        self.gridLayout.addWidget(self.endTime, 1, 1, 1, 1)
-        self.endTime.setCurrentSectionIndex(0)
-        self.endTime.setTime(end)
+            self.verticalLayout.removeWidget(groupToRemove)
+            groupToRemove.setParent(None)  # Remove it from UI
+            groupToRemove.deleteLater()  # Clean up
 
-        self.startTime = QtWidgets.QTimeEdit(self.lyricGroup)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.startTime.sizePolicy().hasHeightForWidth())
-        self.startTime.setSizePolicy(sizePolicy)
-        self.startTime.setMinimumSize(QtCore.QSize(100, 30))
-        self.startTime.setMaximumSize(QtCore.QSize(75, 16777215))
-        font = QtGui.QFont()
-        font.setPointSize(11)
-        self.startTime.setFont(font)
-        self.startTime.setCurrentSection(QtWidgets.QDateTimeEdit.MSecSection)
-        self.startTime.setCurrentSection(2)
-        self.startTime.setCurrentSectionIndex(2)
-        self.startTime.setTime(start)
-        self.startTime.setObjectName("startTime")
-        self.startTime.setDisplayFormat("mm:ss:zzz")
-        # self.startTime.timeChanged.connect(lambda:self.IncreaseTime(self.endTime))
+            # Update positions and labels
+            for i, group in enumerate(self.lyricList):
+                group.setProperty("position", i)
+                group.lyricCountLabel.setText(str(i + 1))
 
-        self.gridLayout.addWidget(self.startTime, 0, 1, 1, 1)
-        self.verticalLayout.addWidget(self.lyricGroup, 0, QtCore.Qt.AlignTop)
+            self.lyricCount -= 1
 
-        # add to list
-        self.lyricList.append(self.lyricGroup)
+    def OnAddAfter(self, after_group):
+        try:
+            index = self.lyricList.index(after_group)
+        except ValueError:
+            index = len(self.lyricList) - 1  # fallback: append to end
+
+        endTime = after_group.endTime.time()
+        newTime = QtCore.QTime(0, endTime.minute(), endTime.second(), endTime.msec() + 1)
+
+        newGroup = self.OnAdd(start=newTime, end=newTime)
+        self.AddToList(lyricGroup=newGroup, positionParam=index + 1)
+
+        self.scrollArea.ensureWidgetVisible(newGroup)
+
+    def AddToList(self, lyricGroup, positionParam=None):
+        position = positionParam if positionParam is not None else len(self.lyricList)
+
+        self.lyricList.insert(position, lyricGroup)
+        self.verticalLayout.insertWidget(position, lyricGroup, 0, QtCore.Qt.AlignTop)
+
+        for i, group in enumerate(self.lyricList):
+            group.setProperty("position", i)
+            group.lyricCountLabel.setText(str(i + 1))
+
         self.lyricCount += 1
-        self.progressBar.setProperty("value", 0)
 
     def IncreaseTime(self, endTime):
         if endTime.time().currentTime() <= self.startTime.time().currentTime():
@@ -571,7 +550,7 @@ class Main(QMainWindow, Ui_MainWindow):
                     srtFile.write("\n" + itemSelected + result.rstrip().replace("\n", " ") + itemSelected + "\n\n")
                 else:
                     srtFile.write("\n" + childLyricsText.toPlainText().replace("\n", " ") + "\n\n")
-                progress = self.progressCount / self.lyricCount
+                progress = self.progressCount / len(self.lyricList)
                 print(int(progress * 100))
                 self.progressBar.setProperty("value", int(progress * 100))
                 self.progressCount += 1
