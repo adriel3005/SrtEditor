@@ -113,6 +113,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.actionInportar_Subtitulos_srt.triggered.connect(self.ImportSRT)
         # Auto Generate Subtitles
         self.actionAuto_Generar_Subtitulos.triggered.connect(self.GenerateSRT)
+        # Displace times
+        self.actionDesplazar_todos_los_tiempos.triggered.connect(self.OnShiftTimesClicked)
 
     def ToggleLightMode(self):
         light_palette = QPalette()
@@ -201,6 +203,70 @@ class Main(QMainWindow, Ui_MainWindow):
             light_palette = QPalette()
             appctxt.app.setPalette(light_palette)
             self.darkMode = False
+
+    def ShiftAllTimestamps(self, milliseconds):
+        for group in self.lyricList:
+            start = group.startTime.time()
+            end = group.endTime.time()
+
+            new_start = self._shift_time(start, milliseconds)
+            new_end = self._shift_time(end, milliseconds)
+
+            group.startTime.setTime(new_start)
+            group.endTime.setTime(new_end)
+
+    def _shift_time(self, qtime, delta_ms):
+        total_ms = (
+                qtime.hour() * 3600000 +
+                qtime.minute() * 60000 +
+                qtime.second() * 1000 +
+                qtime.msec() +
+                delta_ms
+        )
+        # Clamp at 0
+        if total_ms < 0:
+            total_ms = 0
+
+        hours = (total_ms // 3600000) % 24
+        minutes = (total_ms // 60000) % 60
+        seconds = (total_ms // 1000) % 60
+        ms = total_ms % 1000
+
+        return QtCore.QTime(hours, minutes, seconds, ms)
+
+    def OnShiftTimesClicked(self):
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Desplazar todos los tiempos")
+
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        label = QtWidgets.QLabel("¿Cuánto tiempo quieres desplazar?", dialog)
+        layout.addWidget(label)
+
+        time_edit = QtWidgets.QTimeEdit(QtCore.QTime(0, 0, 0), dialog)
+        time_edit.setDisplayFormat("mm:ss:zzz")
+        layout.addWidget(time_edit)
+
+        direction_combo = QtWidgets.QComboBox(dialog)
+        direction_combo.addItems(["Adelantar (hacia adelante)", "Retrasar (hacia atrás)"])
+        layout.addWidget(direction_combo)
+
+        button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+        button_box.accepted.connect(dialog.accept)
+        button_box.rejected.connect(dialog.reject)
+        layout.addWidget(button_box)
+
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            time = time_edit.time()
+            delta_ms = (
+                    time.minute() * 60000 +
+                    time.second() * 1000 +
+                    time.msec()
+            )
+            if direction_combo.currentIndex() == 1:  # "Retrasar"
+                delta_ms *= -1
+
+            self.ShiftAllTimestamps(delta_ms)
 
     def GenerateSRT(self):
         model = whisper.load_model("turbo")
@@ -369,14 +435,11 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def mediaStateChanged(self, state):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
-            self.playButton.setIcon(
-                self.style().standardIcon(QStyle.SP_MediaPause))
-            # Show exact time when paused
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
             self.SetCurrentTimeText(self.mediaPlayer.position())
-            self.SetCurrentLyrics(self.mediaPlayer.position())
+            self.SetCurrentLyrics(self.mediaPlayer.position())  # Still passes int (ms)
         else:
-            self.playButton.setIcon(
-                self.style().standardIcon(QStyle.SP_MediaPlay))
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
@@ -484,84 +547,48 @@ class Main(QMainWindow, Ui_MainWindow):
             newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec())
             endTime.setTime(newTime)
 
+    def _format_qtime(self, qtime):
+        """
+        Convert QTime to SRT timestamp format: hh:mm:ss,SSS
+        Example: 00:01:23,456
+        """
+        return qtime.toString("hh:mm:ss,zzz").replace(".", ",")
+
     def CreateSRT(self):
-        # For progress bar
-        self.progressCount = 1
+        if not self.lyricList:
+            QtWidgets.QMessageBox.warning(self, "Error", "No hay entradas de letras para exportar.")
+            return
 
-        itemSelected = self.textAppendList.currentText()
+        srt_lines = []
+        selected_emoji = self.textAppendList.currentText().strip()
 
-        # Check to see if file has been open
-        if self.videoPath:
+        for i, group in enumerate(self.lyricList):
+            start = group.startTime.time()
+            end = group.endTime.time()
+            text = group.lyricsText.toPlainText().strip()
 
-            self.newVideoPath = self.videoPath.split(".")[0] + " - NoTranslation" + ".srt"
-            srtFile = open(self.newVideoPath, "w", encoding="utf-8")
+            if not text:
+                continue  # Skip empty entries
 
-            if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
-                self.newVideoPath = self.videoPath.split(".")[0] + ".srt"
-                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
-            elif self.translateEnglish.isChecked():
-                self.newVideoPath = self.videoPath.split(".")[0] + " - English" + ".srt"
-                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
-            elif self.translateSpanish.isChecked():
-                self.newVideoPath = self.videoPath.split(".")[0] + " - Spanish" + ".srt"
-                srtFile = open(self.newVideoPath, "w", encoding="utf-8")
+            # Add emoji at start and end if selected
+            if selected_emoji:
+                text = f"{selected_emoji} {text} {selected_emoji}"
 
-            for i in range(len(self.lyricList)):
-                # lyrics
-                childLyricsText = self.lyricList[i].findChild(QtWidgets.QPlainTextEdit, "lyricsText")
+            srt_lines.append(f"{i + 1}")
+            srt_lines.append(f"{self._format_qtime(start)} --> {self._format_qtime(end)}")
+            srt_lines.append(text)
+            srt_lines.append("")  # Blank line between entries
 
-                # start Time
-                ## Format: hh:mm:ss:zzz
-                childStartTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "startTime").time()
+        # Ask user where to save
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Guardar archivo SRT", "", "SubRip Files (*.srt)"
+        )
 
-                # end Time
-                childEndTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "endTime").time()
+        if file_path:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(srt_lines))
 
-                # print("Start time : " + str(childStartTime.minute()) + str(childStartTime.second()) + str(
-                #    childStartTime.msec()))
-
-                # Number of iteration
-                srtFile.write(str(self.progressCount) + "\n")
-
-                # start time
-                minuteTime = self.TwoCharSyntax(str(childStartTime.minute()))
-                secondTime = self.TwoCharSyntax(str(childStartTime.second()))
-                mSecTime = self.ThreeCharSyntax(str(childStartTime.msec()))
-                srtFile.write("00:" + minuteTime + ":" + secondTime + "," + mSecTime + " --> ")
-
-                # end time
-                minuteTime = self.TwoCharSyntax(str(childEndTime.minute()))
-                secondTime = self.TwoCharSyntax(str(childEndTime.second()))
-                mSecTime = self.ThreeCharSyntax(str(childEndTime.msec()))
-                srtFile.write("00:" + minuteTime + ":" + secondTime + "," + mSecTime)
-
-                # Lyrics
-
-                if self.translateEnglish.isChecked() and self.translateSpanish.isChecked():
-                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result.rstrip().replace("\n", " ") + "\n")
-                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write(itemSelected + result.rstrip().replace("\n", " ") + itemSelected + "\n\n")
-                elif self.translateEnglish.isChecked():
-                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='en')
-                    srtFile.write("\n" + result.rstrip().replace("\n", " ") + "\n\n")
-                elif self.translateSpanish.isChecked():
-                    result = self.translator.translate(childLyricsText.toPlainText(), lang_tgt='es')
-                    srtFile.write("\n" + itemSelected + result.rstrip().replace("\n", " ") + itemSelected + "\n\n")
-                else:
-                    srtFile.write("\n" + childLyricsText.toPlainText().replace("\n", " ") + "\n\n")
-                progress = self.progressCount / len(self.lyricList)
-                print(int(progress * 100))
-                self.progressBar.setProperty("value", int(progress * 100))
-                self.progressCount += 1
-
-                if progress == 1:
-                    print(self.newVideoPath)
-                    openPath = self.newVideoPath.replace('/', '\\')
-                    subprocess.Popen(r'explorer /select,"' + openPath + '"')
-
-        else:
-            self.ShowPopUpMessage()
+            QtWidgets.QMessageBox.information(self, "Éxito", f"Archivo guardado:\n{file_path}")
 
     # check if string is only 1 character
     def TwoCharSyntax(self, str):
@@ -581,35 +608,23 @@ class Main(QMainWindow, Ui_MainWindow):
         else:
             return str
 
-    def SetCurrentLyrics(self, currentTime):
+    def SetCurrentLyrics(self, current_position_ms):
+        # Convert milliseconds to QTime
+        current_time = QtCore.QTime(0, 0, 0).addMSecs(current_position_ms)
 
-        showingLyrics = False
-        for i in range(len(self.lyricList)):
-            # start Time
-            ## Format: hh:mm:ss:zzz
-            childStartTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "startTime").time()
+        found_lyric = False
+        for lyric_group in self.lyricList:
+            start_time = lyric_group.startTime.time()
+            end_time = lyric_group.endTime.time()
 
-            # convert to msecs
-            minuteTime = childStartTime.minute()
-            secondTime = childStartTime.second()
-            mSecTime = childStartTime.msec()
-            startTotal = (minuteTime * 60000) + (secondTime * 1000) + mSecTime
+            # Now all three are QTime objects
+            if start_time <= current_time <= end_time:
+                self.currentLyrics.setText(lyric_group.lyricsText.toPlainText())
+                found_lyric = True
+                break
 
-            # end Time
-            childEndTime = self.lyricList[i].findChild(QtWidgets.QTimeEdit, "endTime").time()
-
-            # convert to msecs
-            minuteTime = childEndTime.minute()
-            secondTime = childEndTime.second()
-            mSecTime = childEndTime.msec()
-            endTotal = (minuteTime * 60000) + (secondTime * 1000) + mSecTime
-
-            if currentTime >= startTotal and currentTime <= endTotal:
-                childLyricsText = self.lyricList[i].findChild(QtWidgets.QPlainTextEdit, "lyricsText")
-                self.currentLyrics.setText(childLyricsText.toPlainText())
-                showingLyrics = True
-        if showingLyrics == False:
-            self.currentLyrics.setText("")
+        if not found_lyric:
+            self.currentLyrics.setText("")  # Clear lyrics if no match
 
     def ShowPopUpMessage(self):
         errorMsg = QMessageBox()

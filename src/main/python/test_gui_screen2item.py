@@ -248,6 +248,8 @@ class Ui_MainWindow(object):
         self.menuFile.setObjectName("menuFile")
         self.menuEstilos = QtWidgets.QMenu(self.menubar)
         self.menuEstilos.setObjectName("menuEstilos")
+        self.menuUtilidades = QtWidgets.QMenu(self.menubar)
+        self.menuUtilidades.setObjectName("menuUtilidades")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -268,14 +270,18 @@ class Ui_MainWindow(object):
         self.actionBlue_Palette.setObjectName("actionBlue_Palette")
         self.actionAuto_Generar_Subtitulos = QtWidgets.QAction(MainWindow)
         self.actionAuto_Generar_Subtitulos.setObjectName("actionAuto_Generar_Subtitulos")
+        self.actionDesplazar_todos_los_tiempos = QtWidgets.QAction(MainWindow)
+        self.actionDesplazar_todos_los_tiempos.setObjectName("actionDesplazar_todos_los_tiempos")
         self.menuFile.addAction(self.actionInportar_Subtitulos_srt)
         self.menuFile.addAction(self.actionAuto_Generar_Subtitulos)
         self.menuEstilos.addAction(self.actionLight_Mode)
         self.menuEstilos.addAction(self.actionDark_Mode_2)
         self.menuEstilos.addAction(self.actionRed_Palette)
         self.menuEstilos.addAction(self.actionBlue_Palette)
+        self.menuUtilidades.addAction(self.actionDesplazar_todos_los_tiempos)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEstilos.menuAction())
+        self.menubar.addAction(self.menuUtilidades.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -308,6 +314,7 @@ class Ui_MainWindow(object):
         self.lyricsTitle.setText(_translate("MainWindow", "Letra"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEstilos.setTitle(_translate("MainWindow", "Estilos"))
+        self.menuUtilidades.setTitle(_translate("MainWindow", "Utilidades"))
         self.actionOpen_Video.setText(_translate("MainWindow", "Open Video"))
         self.actionInportar_Subtitulos_srt.setText(_translate("MainWindow", "Importar Subtitulos srt"))
         self.actionDark_Mode.setText(_translate("MainWindow", "Dark Mode"))
@@ -316,4 +323,15 @@ class Ui_MainWindow(object):
         self.actionRed_Palette.setText(_translate("MainWindow", "Red Palette"))
         self.actionBlue_Palette.setText(_translate("MainWindow", "Blue Palette"))
         self.actionAuto_Generar_Subtitulos.setText(_translate("MainWindow", "Generar Subtitulos Automaticamente"))
+        self.actionDesplazar_todos_los_tiempos.setText(_translate("MainWindow", "Desplazar todos los tiempos"))
 import plusandminus_rc
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

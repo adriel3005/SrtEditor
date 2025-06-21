@@ -526,8 +526,15 @@
     <addaction name="actionRed_Palette"/>
     <addaction name="actionBlue_Palette"/>
    </widget>
+   <widget class="QMenu" name="menuUtilidades">
+    <property name="title">
+     <string>Utilidades</string>
+    </property>
+    <addaction name="actionDesplazar_todos_los_tiempos"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEstilos"/>
+   <addaction name="menuUtilidades"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_Video">
@@ -568,6 +575,11 @@
   <action name="actionAuto_Generar_Subtitulos">
    <property name="text">
     <string>Generar Subtitulos Automaticamente</string>
+   </property>
+  </action>
+  <action name="actionDesplazar_todos_los_tiempos">
+   <property name="text">
+    <string>Desplazar todos los tiempos</string>
    </property>
   </action>
  </widget>
