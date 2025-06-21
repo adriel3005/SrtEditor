@@ -494,7 +494,9 @@ class Main(QMainWindow, Ui_MainWindow):
             count=self.lyricCount,
             parent=self.scrollAreaWidgetContents,
             on_add=self.OnAddAfter,
-            on_remove=self.OnRemove
+            on_remove=self.OnRemove,
+            on_set_start=self.SetStartToCurrentTime,
+            on_set_end=self.SetEndToCurrentTime,
         )
         group.setProperty("position", len(self.lyricList))
         return group
@@ -546,6 +548,16 @@ class Main(QMainWindow, Ui_MainWindow):
             startTimeObject = self.startTime.time()
             newTime = QtCore.QTime(0, startTimeObject.minute(), startTimeObject.second(), startTimeObject.msec())
             endTime.setTime(newTime)
+
+    def SetStartToCurrentTime(self, group):
+        current_ms = self.mediaPlayer.position()
+        current_time = QtCore.QTime(0, 0, 0).addMSecs(current_ms)
+        group.startTime.setTime(current_time)
+
+    def SetEndToCurrentTime(self, group):
+        current_ms = self.mediaPlayer.position()
+        current_time = QtCore.QTime(0, 0, 0).addMSecs(current_ms)
+        group.endTime.setTime(current_time)
 
     def _format_qtime(self, qtime):
         """

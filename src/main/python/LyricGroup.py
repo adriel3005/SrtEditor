@@ -1,12 +1,12 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 class LyricGroup(QtWidgets.QWidget):
-    def __init__(self, start=QtCore.QTime(0, 0, 0), end=QtCore.QTime(0, 0, 0), lyrics="", count=0, parent=None, on_add=None, on_remove=None):
+    def __init__(self, start=QtCore.QTime(0, 0, 0), end=QtCore.QTime(0, 0, 0), lyrics="", count=0, parent=None, on_add=None, on_remove=None, on_set_start=None, on_set_end=None):
         super().__init__(parent)
 
         self.setObjectName("lyricGroup")
         self.setMinimumSize(QtCore.QSize(0, 150))
-        self.setMaximumSize(QtCore.QSize(600, 100))
+        ##self.setMaximumSize(QtCore.QSize(600, 100))
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         layout = QtWidgets.QGridLayout(self)
@@ -76,5 +76,21 @@ class LyricGroup(QtWidgets.QWidget):
 
         # Connect remove button to callback
         self.removeButton.clicked.connect(lambda: on_remove(self) if on_remove else None)
+
+        # Set Start Time button
+        self.setStartButton = QtWidgets.QPushButton("⏱ Inicio", self)
+        self.setStartButton.setMinimumSize(QtCore.QSize(100, 30))
+        self.setStartButton.clicked.connect(lambda: self.on_set_start(self) if self.on_set_start else None)
+        layout.addWidget(self.setStartButton, 2, 2, 1, 1)
+
+        # Set End Time button
+        self.setEndButton = QtWidgets.QPushButton("⏱ Final", self)
+        self.setEndButton.setMinimumSize(QtCore.QSize(100, 30))
+        self.setEndButton.clicked.connect(lambda: self.on_set_end(self) if self.on_set_end else None)
+        layout.addWidget(self.setEndButton, 2, 3, 1, 1)
+
+        self.on_set_start = on_set_start
+        self.on_set_end = on_set_end
+
 
         self.setLayout(layout)

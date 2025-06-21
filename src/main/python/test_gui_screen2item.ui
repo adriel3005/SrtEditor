@@ -248,16 +248,10 @@
     <item row="2" column="0" rowspan="2" colspan="2">
      <widget class="QScrollArea" name="scrollArea">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>400</width>
-        <height>16777215</height>
-       </size>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
@@ -270,7 +264,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>398</width>
+         <width>447</width>
          <height>815</height>
         </rect>
        </property>
