@@ -7,7 +7,8 @@ class LyricGroup(QtWidgets.QWidget):
         self.setObjectName("lyricGroup")
         self.setMinimumSize(QtCore.QSize(0, 150))
         ##self.setMaximumSize(QtCore.QSize(600, 100))
-        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
+
 
         layout = QtWidgets.QGridLayout(self)
 
@@ -16,6 +17,8 @@ class LyricGroup(QtWidgets.QWidget):
 
         fontText = QtGui.QFont()
         fontText.setPointSize(12)
+
+        button_width = 100  # or whatever looks good
 
         # Start Label
         self.startLabel = QtWidgets.QLabel("Inicio:", self)
@@ -35,7 +38,7 @@ class LyricGroup(QtWidgets.QWidget):
         self.lyricsText = QtWidgets.QPlainTextEdit(self)
         self.lyricsText.setFont(fontText)
         self.lyricsText.setPlainText(lyrics)
-        layout.addWidget(self.lyricsText, 0, 2, 2, 1)
+        layout.addWidget(self.lyricsText, 0, 2, 2, 2)  # Span 2 columns to reclaim space
 
         # End Label
         self.endLabel = QtWidgets.QLabel("Final:", self)
@@ -51,18 +54,26 @@ class LyricGroup(QtWidgets.QWidget):
         self.endTime.setTime(end)
         layout.addWidget(self.endTime, 1, 1, 1, 1)
 
-        # Count label
-        self.lyricCountLabel = QtWidgets.QLabel(str(count), self)
-        self.lyricCountLabel.setFont(fontText)
+        # Count label positioned *inside* lyricsText
+        self.lyricCountLabel = QtWidgets.QLabel(str(count), self.lyricsText)
+        countFont = QtGui.QFont()
+        countFont.setPointSize(9)
+        self.lyricCountLabel.setFont(countFont)
+        self.lyricCountLabel.setStyleSheet("background-color: transparent; color: gray;")
+        self.lyricCountLabel.setFixedSize(20, 15)
+        self.lyricCountLabel.move(self.lyricsText.width() - 25, 5)
         self.lyricCountLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        self.lyricCountLabel.setMinimumSize(QtCore.QSize(0, 20))
-        self.lyricCountLabel.setMaximumSize(QtCore.QSize(16777215, 20))
-        layout.addWidget(self.lyricCountLabel, 0, 3, 1, 1)
+        self.lyricCountLabel.raise_()
+
+        # Update position if resized
+        self.lyricsText.resizeEvent = lambda event: self.lyricCountLabel.move(self.lyricsText.width() - 25, 5)
 
         # Add Button
         self.addButton = QtWidgets.QPushButton("Añadir", self)
         self.addButton.setMinimumSize(QtCore.QSize(100, 30))
-        self.addButton.setMaximumSize(QtCore.QSize(100, 16777215))
+        #self.addButton.setMaximumSize(QtCore.QSize(100, 16777215))
+        #self.addButton.setFixedWidth(button_width)
+
         layout.addWidget(self.addButton, 2, 0, 1, 1)
 
         # Connect the add button to the on_add callback if provided
@@ -71,7 +82,8 @@ class LyricGroup(QtWidgets.QWidget):
         # Remove Button
         self.removeButton = QtWidgets.QPushButton("Eliminar", self)
         self.removeButton.setMinimumSize(QtCore.QSize(100, 30))
-        self.removeButton.setMaximumSize(QtCore.QSize(100, 16777215))
+        #self.removeButton.setMaximumSize(QtCore.QSize(100, 16777215))
+        #self.removeButton.setFixedWidth(button_width)
         layout.addWidget(self.removeButton, 2, 1, 1, 1)
 
         # Connect remove button to callback
@@ -81,16 +93,22 @@ class LyricGroup(QtWidgets.QWidget):
         self.setStartButton = QtWidgets.QPushButton("⏱ Inicio", self)
         self.setStartButton.setMinimumSize(QtCore.QSize(100, 30))
         self.setStartButton.clicked.connect(lambda: self.on_set_start(self) if self.on_set_start else None)
+        #self.setStartButton.setFixedWidth(button_width)
         layout.addWidget(self.setStartButton, 2, 2, 1, 1)
 
         # Set End Time button
         self.setEndButton = QtWidgets.QPushButton("⏱ Final", self)
         self.setEndButton.setMinimumSize(QtCore.QSize(100, 30))
         self.setEndButton.clicked.connect(lambda: self.on_set_end(self) if self.on_set_end else None)
+        #self.setEndButton.setFixedWidth(button_width)
         layout.addWidget(self.setEndButton, 2, 3, 1, 1)
 
         self.on_set_start = on_set_start
         self.on_set_end = on_set_end
 
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 1)
+        layout.setColumnStretch(2, 1)
+        layout.setColumnStretch(3, 1)
 
         self.setLayout(layout)
