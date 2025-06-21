@@ -29,8 +29,8 @@ class LyricGroup(QtWidgets.QWidget):
         self.startTime = QtWidgets.QTimeEdit(self)
         self.startTime.setDisplayFormat("mm:ss:zzz")
         self.startTime.setFont(fontText)
-        self.startTime.setMinimumSize(QtCore.QSize(100, 30))
-        self.startTime.setMaximumSize(QtCore.QSize(75, 16777215))
+        self.startTime.setMinimumSize(QtCore.QSize(150, 30))
+        self.startTime.setMaximumSize(QtCore.QSize(150, 16777215))
         self.startTime.setTime(start)
         layout.addWidget(self.startTime, 0, 1, 1, 1)
 
@@ -49,8 +49,8 @@ class LyricGroup(QtWidgets.QWidget):
         self.endTime = QtWidgets.QTimeEdit(self)
         self.endTime.setDisplayFormat("mm:ss:zzz")
         self.endTime.setFont(fontText)
-        self.endTime.setMinimumSize(QtCore.QSize(100, 30))
-        self.endTime.setMaximumSize(QtCore.QSize(75, 16777215))
+        self.endTime.setMinimumSize(QtCore.QSize(150, 30))
+        self.endTime.setMaximumSize(QtCore.QSize(150, 16777215))
         self.endTime.setTime(end)
         layout.addWidget(self.endTime, 1, 1, 1, 1)
 
