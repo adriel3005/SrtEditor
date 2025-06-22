@@ -1,4 +1,4 @@
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QStyle, QSlider, QStatusBar
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import QDir, Qt, QUrl, QSize, QThread, pyqtSignal
@@ -42,10 +42,10 @@ class Main(QMainWindow, Ui_MainWindow):
         self.actionOpen_Video.triggered.connect(self.OpenVideoFile)
 
         # Modes
-        self.actionDark_Mode_2.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
-        self.actionLight_Mode.triggered.connect(self.ToggleLightMode)
-        self.actionRed_Palette.triggered.connect(lambda: self.ToggleRedMode(self.redMode))
-        self.actionBlue_Palette.triggered.connect(lambda: self.ToggleBlueMode(self.blueMode))
+        # self.actionDark_Mode_2.triggered.connect(lambda: self.ToggleDarkMode(self.darkMode))
+        # self.actionLight_Mode.triggered.connect(self.ToggleLightMode)
+        # self.actionRed_Palette.triggered.connect(lambda: self.ToggleRedMode(self.redMode))
+        # self.actionBlue_Palette.triggered.connect(lambda: self.ToggleBlueMode(self.blueMode))
 
         # Video
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
@@ -115,94 +115,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.actionAuto_Generar_Subtitulos.triggered.connect(self.GenerateSRT)
         # Displace times
         self.actionDesplazar_todos_los_tiempos.triggered.connect(self.OnShiftTimesClicked)
-
-    def ToggleLightMode(self):
-        light_palette = QPalette()
-        appctxt.app.setPalette(light_palette)
-
-    def ToggleRedMode(self, dark):
-
-        if not dark:
-            red_palette = QPalette()
-
-            red_palette.setColor(QPalette.Window, QColor(100, 53, 53))
-            red_palette.setColor(QPalette.WindowText, Qt.white)
-            red_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-            red_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-            red_palette.setColor(QPalette.ToolTipBase, Qt.white)
-            red_palette.setColor(QPalette.ToolTipText, Qt.white)
-            red_palette.setColor(QPalette.Text, Qt.white)
-            red_palette.setColor(QPalette.Button, QColor(53, 53, 53))
-            red_palette.setColor(QPalette.ButtonText, Qt.white)
-            red_palette.setColor(QPalette.BrightText, Qt.red)
-            red_palette.setColor(QPalette.Link, QColor(42, 130, 218))
-            red_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-            red_palette.setColor(QPalette.HighlightedText, Qt.black)
-
-            appctxt.app.setPalette(red_palette)
-            # appctxt.app.setStyleSheet(
-            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-            self.redMode = True
-        else:
-            light_palette = QPalette()
-            appctxt.app.setPalette(light_palette)
-            self.redMode = False
-
-    def ToggleBlueMode(self, dark):
-
-        if not dark:
-            blue_palette = QPalette()
-
-            blue_palette.setColor(QPalette.Window, QColor(53, 53, 100))
-            blue_palette.setColor(QPalette.WindowText, Qt.white)
-            blue_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-            blue_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-            blue_palette.setColor(QPalette.ToolTipBase, Qt.white)
-            blue_palette.setColor(QPalette.ToolTipText, Qt.white)
-            blue_palette.setColor(QPalette.Text, Qt.white)
-            blue_palette.setColor(QPalette.Button, QColor(53, 53, 53))
-            blue_palette.setColor(QPalette.ButtonText, Qt.white)
-            blue_palette.setColor(QPalette.BrightText, Qt.red)
-            blue_palette.setColor(QPalette.Link, QColor(42, 130, 218))
-            blue_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-            blue_palette.setColor(QPalette.HighlightedText, Qt.black)
-
-            appctxt.app.setPalette(blue_palette)
-            # appctxt.app.setStyleSheet(
-            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-            self.blueMode = True
-        else:
-            light_palette = QPalette()
-            appctxt.app.setPalette(light_palette)
-            self.blueMode = False
-
-    def ToggleDarkMode(self, dark):
-
-        if not dark:
-            dark_palette = QPalette()
-
-            dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
-            dark_palette.setColor(QPalette.WindowText, Qt.white)
-            dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-            dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-            dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
-            dark_palette.setColor(QPalette.ToolTipText, Qt.white)
-            dark_palette.setColor(QPalette.Text, Qt.white)
-            dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
-            dark_palette.setColor(QPalette.ButtonText, Qt.white)
-            dark_palette.setColor(QPalette.BrightText, Qt.red)
-            dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
-            dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-            dark_palette.setColor(QPalette.HighlightedText, Qt.black)
-
-            appctxt.app.setPalette(dark_palette)
-            # appctxt.app.setStyleSheet(
-            #    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-            self.darkMode = True
-        else:
-            light_palette = QPalette()
-            appctxt.app.setPalette(light_palette)
-            self.darkMode = False
 
     def ShiftAllTimestamps(self, milliseconds):
         for group in self.lyricList:
@@ -653,15 +565,16 @@ class WheelEventFilter(QtCore.QObject):
 
 
 if __name__ == '__main__':
-    appctxt = ApplicationContext()  # 1. Instantiate ApplicationContext
-    # app = QApplication(sys.argv)
+    app = QApplication(sys.argv)
     window = Main()
 
-    appctxt.app.setStyle("Fusion")
+    #appctxt.app.setStyle("Fusion")
 
     app = QtWidgets.QApplication.instance()
     filter = WheelEventFilter()
     app.installEventFilter(filter)
+
+    app.setWindowIcon(QIcon("srt_app_icon_multi_res.ico"))
 
     # dark_palette = QPalette()
     #
@@ -687,5 +600,4 @@ if __name__ == '__main__':
     # window.show()
     window.showMaximized()
 
-    exit_code = appctxt.app.exec_()  # 2. Invoke appctxt.app.exec_()
-    sys.exit(exit_code)
+    sys.exit(app.exec_())

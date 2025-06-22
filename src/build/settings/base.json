@@ -1,6 +1,6 @@
 {
-    "app_name": "myapp",
+    "app_name": "SrtEditor",
     "author": "Adriel",
     "main_module": "src/main/python/main.py",
-    "version": "0.0.0"
+    "version": "1.1.0"
 }
