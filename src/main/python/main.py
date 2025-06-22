@@ -17,7 +17,7 @@ import sip
 import sys
 import qdarkstyle
 import subprocess
-import whisper
+#import whisper
 from datetime import timedelta
 
 
@@ -181,26 +181,27 @@ class Main(QMainWindow, Ui_MainWindow):
             self.ShiftAllTimestamps(delta_ms)
 
     def GenerateSRT(self):
-        model = whisper.load_model("turbo")
-        result = model.transcribe(self.videoPath)
-        print(result["text"])
-        # startQTime = self.ReturnQTimeObject(startString)
-        # endQtime = self.ReturnQTimeObject(endString)
-        # self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
-        if len(result["segments"]) > 0:
-            self.RemoveAll()
-            for segment in result["segments"]:
-                startTime = str(0) + str(timedelta(seconds=int(segment['start']))) + ',000'
-                endTime = str(0) + str(timedelta(seconds=int(segment['end']))) + ',000'
-                text = segment['text']
-                segmentId = segment['id'] + 1
-                segment = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] is ' ' else text}\n\n"
-                startQTime = self.ReturnQTimeObject(startTime)
-                endQTime = self.ReturnQTimeObject(endTime)
-                self.OnAdd(start=startQTime, end=endQTime, lyrics=text[1:] if text[0] is ' ' else text)
-                # srtFilename = os.path.join("SrtFiles", f"VIDEO_FILENAME.srt")
-                # with open(srtFilename, 'a', encoding='utf-8') as srtFile:
-                #    srtFile.write(segment)
+        print("TODO: Implement auto-generate subtitles functionality")
+        # model = whisper.load_model("turbo")
+        # result = model.transcribe(self.videoPath)
+        # print(result["text"])
+        # # startQTime = self.ReturnQTimeObject(startString)
+        # # endQtime = self.ReturnQTimeObject(endString)
+        # # self.OnAdd(start=startQTime, end=endQtime, lyrics=lyricsString)
+        # if len(result["segments"]) > 0:
+        #     self.RemoveAll()
+        #     for segment in result["segments"]:
+        #         startTime = str(0) + str(timedelta(seconds=int(segment['start']))) + ',000'
+        #         endTime = str(0) + str(timedelta(seconds=int(segment['end']))) + ',000'
+        #         text = segment['text']
+        #         segmentId = segment['id'] + 1
+        #         segment = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] is ' ' else text}\n\n"
+        #         startQTime = self.ReturnQTimeObject(startTime)
+        #         endQTime = self.ReturnQTimeObject(endTime)
+        #         self.OnAdd(start=startQTime, end=endQTime, lyrics=text[1:] if text[0] is ' ' else text)
+        #         # srtFilename = os.path.join("SrtFiles", f"VIDEO_FILENAME.srt")
+        #         # with open(srtFilename, 'a', encoding='utf-8') as srtFile:
+        #         #    srtFile.write(segment)
 
     # Currently only supports mp4
     def ImportSRT(self):
