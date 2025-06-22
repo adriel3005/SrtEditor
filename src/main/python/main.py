@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon, QFont, QPalette, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 # from SRT_GUI_Skeleton import Ui_MainWindow
-from src.main.python.LyricGroup import LyricGroup
+from LyricGroup import LyricGroup
 from test_gui_screen2item import Ui_MainWindow
 # from test_gui_screen1itempromotedlyrics import Ui_MainWindow
 # import from below allows the OnAdd function to work
